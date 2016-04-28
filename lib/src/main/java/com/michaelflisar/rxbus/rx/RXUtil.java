@@ -15,32 +15,33 @@ import rx.schedulers.Schedulers;
  */
 public class RXUtil
 {
-//    private static final Observable.Transformer schedulersTransformer = observable -> observable
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread());
-
     private static final Observable.Transformer schedulersTransformer = new Observable.Transformer() {
             @Override
             public Object call(Object observable) {
-                return ((Observable)observable).subscribeOn(Schedulers.io())
+                return ((Observable)observable)
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread());
             }
         };
 
+    private static final Observable.Transformer schedulersTransformerBackground = new Observable.Transformer() {
+        @Override
+        public Object call(Object observable) {
+            return ((Observable)observable)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io());
+        }
+    };
+
     @SuppressWarnings("unchecked")
-    public static <T> Observable.Transformer<T, T> applyBackgroundWorkForegroundObserveSchedulers() {
-        return (Observable.Transformer<T, T>) schedulersTransformer;
+    public static <T> Observable.Transformer<T, T> applyBackgroundSchedulers() {
+        return (Observable.Transformer<T, T>) schedulersTransformerBackground;
     }
 
     // default background subscription, foreground observation schedulars
     @SuppressWarnings("unchecked")
     public static <T> Observable.Transformer<T, T> applySchedulars() {
         return (Observable.Transformer<T, T>) schedulersTransformer;
-    }
-
-    public static <T> Observable<T> applySchedulars(Observable<T> observable)
-    {
-        return observable.compose(applyBackgroundWorkForegroundObserveSchedulers());
     }
 
     public static Observable<Boolean> createResumeStateObservable(IRXBusIsResumedProvider provider)
