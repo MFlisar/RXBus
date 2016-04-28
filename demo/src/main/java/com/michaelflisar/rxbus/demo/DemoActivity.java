@@ -33,8 +33,9 @@ public class DemoActivity extends PauseAwareActivity
 
         if (savedInstanceState == null)
         {
-            Observable<String> observableTest1 = RXBus.get().observeEvent(String.class);
-            observableTest1 = RXUtil.applySchedulars(observableTest1);
+            Observable<String> observableTest1 = RXBus.get()
+                    .observeEvent(String.class)
+                    .compose(RXUtil.<String>applySchedulars());
             mSubscriptions.add(observableTest1.subscribe(new Action1<String>()
             {
                 @Override
@@ -44,46 +45,26 @@ public class DemoActivity extends PauseAwareActivity
                 }
             }));
 
-            Observable<Boolean> observableIsResumed = Observable.create(new Observable.OnSubscribe<Boolean>() {
-
-                @Override
-                public void call(final Subscriber<? super Boolean> subscriber) {
-                    IRXBusResumedListener listener = new IRXBusResumedListener() {
-
-                        @Override
-                        public void onResumedChanged(boolean resumed) {
-                            if (subscriber.isUnsubscribed()) {
-                                removeResumedListener(this);
-                            } else {
-                                subscriber.onNext(resumed);
-                            }
-
-                            Log.d(TAG, "onResumedChanged: resumed=" + resumed);
-                        }
-                    };
-
-                    addResumedListener(listener, false);
-                }
-            });
-
-            Observable<String> observableTest2 = RXBus.get().observeEvent(String.class)
-                    .lift(new RxValve<String>(observableIsResumed, 1, isRXBusResumed()));
-            observableTest2 = RXUtil.applySchedulars(observableTest2);
+            Observable<Boolean> observableIsResumed = RXUtil.createResumeStateObservable(this);
+            Observable<String> observableTest2 = RXBus.get()
+                    .observeEvent(String.class)
+                    .lift(new RxValve<String>(observableIsResumed, 1, isRXBusResumed()))
+                    .compose(RXUtil.<String>applySchedulars());
             mSubscriptions.add(observableTest2.subscribe(new Observer<String>()
             {
                 @Override
                 public void onCompleted() {
-                    Log.d(TAG, "QUEUED BUS 3: onCompleted");
+                    Log.d(TAG, "QUEUED BUS 2: onCompleted");
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    Log.d(TAG, "QUEUED BUS 3: error=" + e.getMessage());
+                    Log.d(TAG, "QUEUED BUS 2: error=" + e.getMessage());
                 }
 
                 @Override
                 public void onNext(String s) {
-                    Log.d(TAG, "QUEUED BUS 3: " + s + " | " + getIsResumedMessage());
+                    Log.d(TAG, "QUEUED BUS 2: " + s + " | " + getIsResumedMessage());
                 }
             }));
 
