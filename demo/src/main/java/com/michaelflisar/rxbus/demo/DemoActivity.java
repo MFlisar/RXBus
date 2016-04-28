@@ -55,7 +55,7 @@ public class DemoActivity extends PauseAwareActivity
             });
             Observable<String> observableTest2 = RXBus.get()
                     .observeEvent(String.class)
-                    .lift(new RxValve<String>(observableIsResumed, 1, isRXBusResumed()))
+                    .lift(new RxValve<String>(observableIsResumed, 1000, isRXBusResumed()))
                     .compose(RXUtil.<String>applySchedulars());
             mSubscriptions.add(observableTest2.subscribe(new Observer<String>()
             {
