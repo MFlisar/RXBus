@@ -21,6 +21,8 @@ Just check out the DemoActivity, it will show the base usage and the difference 
 2. add the compile statement to your module (currently only snapshot exists):
 
    `compile 'com.github.MFlisar:RXBus:-SNAPSHOT'`
+   
+More about jitpack can be found here: https://jitpack.io/#MFlisar/RXBus/
 
 #Usage (simple)
 
