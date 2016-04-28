@@ -11,7 +11,7 @@ RX based bus with lifecycle based queuing support
 
 #Demo
 
-Just check out the DemoActivity, is will show the base usage and the difference between the `RXBus` and the `RXQueueBus`
+Just check out the DemoActivity, it will show the base usage and the difference between the `RXBus` and the `RXQueueBus`
  
 #Usage (simple)
 
