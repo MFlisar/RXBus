@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.michaelflisar.rxbus.RXBus;
+import com.michaelflisar.rxbus.interfaces.IRXBusIsResumedProvider;
 import com.michaelflisar.rxbus.interfaces.IRXBusResumedListener;
 import com.michaelflisar.rxbus.rx.RXUtil;
 import com.michaelflisar.rxbus.rx.RxValve;
@@ -45,7 +46,13 @@ public class DemoActivity extends PauseAwareActivity
                 }
             }));
 
-            Observable<Boolean> observableIsResumed = RXUtil.createResumeStateObservable(this);
+            Observable<Boolean> observableIsResumed = RXUtil.createResumeStateObservable(this, new IRXBusResumedListener()
+            {
+                @Override
+                public void onResumedChanged(boolean resumed) {
+                    Log.d(TAG, "onResumedChanged - resumed=" + resumed);
+                }
+            });
             Observable<String> observableTest2 = RXBus.get()
                     .observeEvent(String.class)
                     .lift(new RxValve<String>(observableIsResumed, 1, isRXBusResumed()))

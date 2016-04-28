@@ -45,11 +45,16 @@ public class RXUtil
 
     public static Observable<Boolean> createResumeStateObservable(IRXBusIsResumedProvider provider)
     {
+        return createResumeStateObservable(provider, null);
+    }
+
+    public static Observable<Boolean> createResumeStateObservable(IRXBusIsResumedProvider provider, final IRXBusResumedListener listener)
+    {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
 
             @Override
             public void call(final Subscriber<? super Boolean> subscriber) {
-                IRXBusResumedListener listener = new IRXBusResumedListener() {
+                IRXBusResumedListener resumedListener = new IRXBusResumedListener() {
 
                     @Override
                     public void onResumedChanged(boolean resumed) {
@@ -58,10 +63,13 @@ public class RXUtil
                         } else {
                             subscriber.onNext(resumed);
                         }
+                        // foreward event to outer listener
+                        if (listener != null)
+                            listener.onResumedChanged(resumed);
                     }
                 };
 
-                provider.addResumedListener(listener, false);
+                provider.addResumedListener(resumedListener, false);
             }
         });
     }
