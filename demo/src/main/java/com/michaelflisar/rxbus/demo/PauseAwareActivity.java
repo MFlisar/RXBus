@@ -1,6 +1,7 @@
 package com.michaelflisar.rxbus.demo;
 
 import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.michaelflisar.rxbus.RXBus;
@@ -13,7 +14,7 @@ import rx.Observable;
 /**
  * Created by flisar on 28.04.2016.
  */
-public class PauseAwareActivity extends Activity implements IRXBusIsResumedProvider
+public class PauseAwareActivity extends AppCompatActivity implements IRXBusIsResumedProvider
 {
     private boolean mPaused = true;
 
