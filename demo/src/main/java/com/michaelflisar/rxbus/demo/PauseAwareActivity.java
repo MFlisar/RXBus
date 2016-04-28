@@ -1,15 +1,12 @@
 package com.michaelflisar.rxbus.demo;
 
-import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-import com.michaelflisar.rxbus.RXBus;
 import com.michaelflisar.rxbus.interfaces.IRXBusIsResumedProvider;
-import com.michaelflisar.rxbus.queued.RXQueueBus;
-import com.michaelflisar.rxbus.queued.RXQueueEvent;
+import com.michaelflisar.rxbus.interfaces.IRXBusResumedListener;
 
-import rx.Observable;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Created by flisar on 28.04.2016.
@@ -17,12 +14,16 @@ import rx.Observable;
 public class PauseAwareActivity extends AppCompatActivity implements IRXBusIsResumedProvider
 {
     private boolean mPaused = true;
+    private HashSet<IRXBusResumedListener> mListeners = new HashSet<>();
 
     @Override
     protected void onResume()
     {
         super.onResume();
         mPaused = false;
+        Iterator<IRXBusResumedListener> iterator = mListeners.iterator();
+        while (iterator.hasNext())
+            iterator.next().onResumedChanged(true);
     }
 
     @Override
@@ -30,6 +31,9 @@ public class PauseAwareActivity extends AppCompatActivity implements IRXBusIsRes
     {
         super.onPause();
         mPaused = true;
+        Iterator<IRXBusResumedListener> iterator = mListeners.iterator();
+        while (iterator.hasNext())
+            iterator.next().onResumedChanged(false);
     }
 
     // --------------
@@ -40,5 +44,17 @@ public class PauseAwareActivity extends AppCompatActivity implements IRXBusIsRes
     public boolean isRXBusResumed()
     {
         return mPaused;
+    }
+
+    @Override
+    public void addResumedListener(IRXBusResumedListener listener, boolean callListener) {
+        mListeners.add(listener);
+        if (callListener)
+            listener.onResumedChanged(isRXBusResumed());
+    }
+
+    @Override
+    public void removeResumedListener(IRXBusResumedListener listener) {
+        mListeners.remove(listener);
     }
 }

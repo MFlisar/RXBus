@@ -4,11 +4,16 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.michaelflisar.rxbus.RXBus;
-import com.michaelflisar.rxbus.queued.RXQueueBus;
-import com.michaelflisar.rxbus.queued.RXQueueEvent;
+import com.michaelflisar.rxbus.interfaces.IRXBusResumedListener;
+import com.michaelflisar.rxbus.rx.RXUtil;
+import com.michaelflisar.rxbus.rx.RxValve;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -19,8 +24,7 @@ public class DemoActivity extends PauseAwareActivity
 {
     private static final String TAG = PauseAwareActivity.class.getSimpleName();
 
-    private Subscription mSubscription1 = null;
-    private Subscription mSubscription2 = null;
+    private static List<Subscription> mSubscriptions = new ArrayList<>();
 
     public void onCreate(Bundle savedInstanceState)
     {
@@ -29,73 +33,124 @@ public class DemoActivity extends PauseAwareActivity
 
         if (savedInstanceState == null)
         {
-            // TEST observable, which will retrieve ALL events until this activity is destroyed!
-            Observable<String> observable = RXBus.get().observeEvent(String.class);
-            mSubscription1 = observable.subscribe(new Action1<String>()
+            Observable<String> observableTest1 = RXBus.get().observeEvent(String.class);
+            observableTest1 = RXUtil.applySchedulars(observableTest1);
+            mSubscriptions.add(observableTest1.subscribe(new Action1<String>()
             {
                 @Override
                 public void call(String s)
                 {
-                    Log.d(TAG, "SIMPLE BUS onNext: " + s + " | " + isRXBusResumed());
+                    Log.d(TAG, "SIMPLE BUS 1: " + s + " | " + getIsResumedMessage());
+                }
+            }));
+
+            Observable<Boolean> observableIsResumed = Observable.create(new Observable.OnSubscribe<Boolean>() {
+
+                @Override
+                public void call(final Subscriber<? super Boolean> subscriber) {
+                    IRXBusResumedListener listener = new IRXBusResumedListener() {
+
+                        @Override
+                        public void onResumedChanged(boolean resumed) {
+                            if (subscriber.isUnsubscribed()) {
+                                removeResumedListener(this);
+                            } else {
+                                subscriber.onNext(resumed);
+                            }
+
+                            Log.d(TAG, "onResumedChanged: resumed=" + resumed);
+                        }
+                    };
+
+                    addResumedListener(listener, false);
                 }
             });
-            Observable<RXQueueEvent<String>> observableTest = RXQueueBus.get().observeEventOnResume(String.class, this);
-            mSubscription2 = RXQueueBus.get().subscribe(observableTest, this, new Observer<String>()
+
+            Observable<String> observableTest2 = RXBus.get().observeEvent(String.class)
+                    .lift(new RxValve<String>(observableIsResumed, 1, isRXBusResumed()));
+            observableTest2 = RXUtil.applySchedulars(observableTest2);
+            mSubscriptions.add(observableTest2.subscribe(new Observer<String>()
             {
                 @Override
-                public void onCompleted()
-                {
-
+                public void onCompleted() {
+                    Log.d(TAG, "QUEUED BUS 3: onCompleted");
                 }
 
                 @Override
-                public void onError(Throwable e)
-                {
-
+                public void onError(Throwable e) {
+                    Log.d(TAG, "QUEUED BUS 3: error=" + e.getMessage());
                 }
 
                 @Override
-                public void onNext(String data)
-                {
-                    Log.d(TAG, "QUEUED BUS onNext: " + data + " | " + isRXBusResumed());
+                public void onNext(String s) {
+                    Log.d(TAG, "QUEUED BUS 3: " + s + " | " + getIsResumedMessage());
                 }
-            });
+            }));
 
-            for (int i = 0; i < 10; i++)
-                RXBus.get().sendEvent("Send in FIRST onCreate: i=" + i);
+            // lets send some sync events
+            for (int i = 0; i < 5; i++)
+                RXBus.get().sendEvent(getLogMessage("onCreate", "main thread i=" + i));
+
+            // lets say another thread is currently emitting events => send some async events
+            new Thread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    for (int i = 0; i < 5; i++)
+                        RXBus.get().sendEvent(getLogMessage("onCreate", "some thread i=" + i));
+                }
+            }).start();
         }
+
+        // to see the difference between the normal bus and the queued bus, we make sure oncreate needs some time
+        // so that the async events have some time to be queued
+        try
+        {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e)
+        {
+
+        }
+
     }
 
     @Override
     public void onPause()
     {
-        RXBus.get().sendEvent("PAUSE 1 - Send BEFORE onPause");
+        RXBus.get().sendEvent(getLogMessage("onPause", "BEFORE on pause"));
         super.onPause();
         Log.d(TAG, "ACTIVITY PAUSED");
-        RXBus.get().sendEvent("PAUSE 2 - Send AFTER onPause");
+        RXBus.get().sendEvent(getLogMessage("onPause", "AFTER on pause"));
     }
 
     @Override
     public void onResume()
     {
-        RXBus.get().sendEvent("RESUME 1 - Send BEFORE onResume");
+        RXBus.get().sendEvent(getLogMessage("onResume", "BEFORE on resume"));
         super.onResume();
         Log.d(TAG, "ACTIVITY RESUMED");
-        // tell the queued bus, that this activity was resumed, so that it can try to resend all events that are queued based on this activities resume state
-        RXQueueBus.get().resume(this);
-        RXBus.get().sendEvent("RESUME 1 - Send AFTER onResume");
+        RXBus.get().sendEvent(getLogMessage("onResume", "BEFORE on resume"));
     }
 
     @Override
     public void onDestroy()
     {
         // unsubscribe
-        mSubscription1.unsubscribe();
-        mSubscription2.unsubscribe();
-
-        // clean all class dependant variables and make sure any reference to this class is removed
-        RXQueueBus.get().clean(this);
-
+        for (int i = 0; i < mSubscriptions.size(); i++)
+            mSubscriptions.get(i).unsubscribe();
         super.onDestroy();
     }
+
+    private String getLogMessage(String method, String msg)
+    {
+        return "[" + method + "] {" + Thread.currentThread().getName() + "} : " + msg;
+    }
+
+    private String getIsResumedMessage()
+    {
+        return "isResumed=" + isRXBusResumed();
+    }
+
 }

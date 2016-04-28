@@ -7,6 +7,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+import rx.subjects.SerializedSubject;
 
 /**
  * Created by Prometheus on 22.04.2016.
@@ -26,7 +27,7 @@ public class RXBus
         return INSTANCE;
     }
 
-    private HashMap<Class<?>, PublishSubject<?>> mSubjects = new HashMap<>();
+    private HashMap<Class<?>, SerializedSubject> mSubjects = new HashMap<>();
 
     // ---------------------------
     // public bus functions
@@ -34,13 +35,13 @@ public class RXBus
 
     public synchronized <T> void sendEvent(T event)
     {
-        PublishSubject<T> subject = getSubject((Class<T>)event.getClass());
+        SerializedSubject subject = getSubject((Class<T>)event.getClass());
         subject.onNext(event);
     }
 
     public synchronized <T> Observable<T> observeEvent(Class<T> eventClass)
     {
-        PublishSubject<T> subject = getSubject(eventClass);
+        SerializedSubject subject = getSubject(eventClass);
         return subject;
     }
 
@@ -48,15 +49,15 @@ public class RXBus
     // private helper functions
     // ---------------------------
 
-    private synchronized <T> PublishSubject<T> getSubject(Class<T> eventClass)
+    private synchronized <T> SerializedSubject getSubject(Class<T> eventClass)
     {
         // 1) look if class already has a publisher subject, if so, return it
         if (mSubjects.containsKey(eventClass))
-            return (PublishSubject<T>)mSubjects.get(eventClass);
+            return (SerializedSubject)mSubjects.get(eventClass);
         // 2) else, create a new one and put it into the map
         else
         {
-            PublishSubject<T> subject = PublishSubject.create();
+            SerializedSubject subject = new SerializedSubject(PublishSubject.create());
             mSubjects.put(eventClass, subject);
             return subject;
         }

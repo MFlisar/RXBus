@@ -6,4 +6,6 @@ package com.michaelflisar.rxbus.interfaces;
 public interface IRXBusIsResumedProvider
 {
     boolean isRXBusResumed();
+    void addResumedListener(IRXBusResumedListener listener, boolean callListener);
+    void removeResumedListener(IRXBusResumedListener listener);
 }

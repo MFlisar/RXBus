@@ -5,24 +5,22 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import rx.Subscription;
-import rx.subjects.PublishSubject;
-import rx.subscriptions.Subscriptions;
 
 /**
  * Created by flisar on 28.04.2016.
  */
-public class SubscriptionManager
+public class RXSubscriptionManager
 {
     // ---------------------------
     // Singleton
     // ---------------------------
 
-    private static SubscriptionManager INSTANCE = null;
+    private static RXSubscriptionManager INSTANCE = null;
 
-    public static SubscriptionManager get()
+    public static RXSubscriptionManager get()
     {
         if (INSTANCE == null)
-            INSTANCE = new SubscriptionManager();
+            INSTANCE = new RXSubscriptionManager();
         return INSTANCE;
     }
 
