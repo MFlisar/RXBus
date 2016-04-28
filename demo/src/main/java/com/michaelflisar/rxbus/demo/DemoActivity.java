@@ -119,7 +119,7 @@ public class DemoActivity extends PauseAwareActivity
         RXBus.get().sendEvent(getLogMessage("onResume", "BEFORE on resume"));
         super.onResume();
         Log.d(TAG, "ACTIVITY RESUMED");
-        RXBus.get().sendEvent(getLogMessage("onResume", "BEFORE on resume"));
+        RXBus.get().sendEvent(getLogMessage("onResume", "AFTER on resume"));
     }
 
     @Override
