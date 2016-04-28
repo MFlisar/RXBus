@@ -66,7 +66,7 @@ public class DemoActivity extends PauseAwareActivity
             }).start();
         }
 
-        // to see the difference between the normal bus and the queued bus, we make sure oncreate needs some time
+        // to see the difference between the different buses and the threads they are observing, we make sure onCreate needs some time
         // so that the async events have some time to be queued
         try
         {
