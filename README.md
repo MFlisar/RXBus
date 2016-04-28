@@ -1,7 +1,7 @@
 # RXBus
 RX based bus with lifecycle based queuing support
 
-#What does it do?
+##What does it do?
 
 * it allows you to post events to a bus
 * it allows you to subscribe to special events whereever you want
@@ -9,11 +9,11 @@ RX based bus with lifecycle based queuing support
 * it allows you to queue events as soon as activity is paused and emit events as soon soon as it is resumed
 * it's very **lightweight**
 
-#Demo
+##Demo
 
 Just check out the DemoActivity, it will show the base usage and the difference between the `RXBus` and the `RXQueueBus`
  
-#Gradle
+##Gradle
 
 1. add jitpack to your project's build.gradle:
 
@@ -24,7 +24,7 @@ Just check out the DemoActivity, it will show the base usage and the difference 
    
 More about jitpack can be found here: https://jitpack.io/#MFlisar/RXBus/
 
-#Usage (simple)
+##Usage (simple)
 
 Just use the `RXBus` class and subscribe to a special event, that's it. Just like following:
 
@@ -35,7 +35,7 @@ Just use the `RXBus` class and subscribe to a special event, that's it. Just lik
     // Send an event to the bus
     RXBus.get().sendEvent(new TestEvent());
     
-#Usage (advanced)
+##Usage (advanced)
 
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
 
