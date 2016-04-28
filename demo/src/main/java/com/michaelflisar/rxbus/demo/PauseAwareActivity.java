@@ -43,7 +43,7 @@ public class PauseAwareActivity extends AppCompatActivity implements IRXBusIsRes
     @Override
     public boolean isRXBusResumed()
     {
-        return mPaused;
+        return !mPaused;
     }
 
     @Override
