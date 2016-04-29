@@ -53,7 +53,7 @@ public class RXBus
     {
         // 1) look if class already has a publisher subject, if so, return it
         if (mSubjects.containsKey(eventClass))
-            return (SerializedSubject)mSubjects.get(eventClass);
+            return mSubjects.get(eventClass);
         // 2) else, create a new one and put it into the map
         else
         {
