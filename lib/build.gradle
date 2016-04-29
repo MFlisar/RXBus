@@ -1,5 +1,8 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 apply plugin: 'me.tatarka.retrolambda'
+
+group = 'com.github.MFlisar'
 
 android {
     compileSdkVersion 23
