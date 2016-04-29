@@ -40,6 +40,6 @@ local.properties
 #build
 *.iml
 #gradle/
-gradlew
-gradlew.bat
-gradle.properties
+#gradlew
+#gradlew.bat
+#gradle.properties
