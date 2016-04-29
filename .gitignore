@@ -39,7 +39,7 @@ local.properties
 #.idea/libraries
 #build
 *.iml
-gradle/
+#gradle/
 gradlew
 gradlew.bat
 gradle.properties
