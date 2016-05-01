@@ -32,24 +32,21 @@ Just check out the [DemoActivity](https://github.com/MFlisar/RXBus/blob/master/d
 
 Just use the `RXBus` class and subscribe to a special event, that's it. Or use the `RXBusBuilder` for more flexible usage. Just like following:
 
-* Variant 1:
-
-    `Observable<TestEvent> simpleObservable1 = RXBus.get().observeEvent(TestEvent.class);`
-
-* Variant 2:
-
-    `Observable<TestEvent> simpleObservable2 = new RXBusBuilder<>(TestEvent.class).buildObservable();`
+    // Variant 1:
+    Observable<TestEvent> simpleObservable1 = RXBus.get().observeEvent(TestEvent.class);
     
-* Variant 3:
-
-        Subscription simpleSubscription1 = new RXBusBuilder(TestEvent.class)
-            .withOnNext(new Action1<TestEvent>() {
-                @Override
-                public void call(TestEvent event) {
-                    // handle event...
-                }
-            })
-            .buildSubscription();
+    // Variant 2:
+    Observable<TestEvent> simpleObservable2 = new RXBusBuilder<>(TestEvent.class).buildObservable();
+    
+    // Variant 3 - with the BUILDER:
+    Subscription simpleSubscription1 = new RXBusBuilder(TestEvent.class)
+        .withOnNext(new Action1<TestEvent>() {
+            @Override
+            public void call(TestEvent event) {
+                // handle event...
+            }
+        })
+        .buildSubscription();
 
 **Sending an event**
    
