@@ -8,17 +8,19 @@
 * it allows you to queue events as soon as activity is paused and emit events as soon soon as it is resumed
 * it's very **lightweight**
  
-### Gradle
+### Gradle (via [JitPack.io](https://jitpack.io/))
 
-1. add jitpack to your project's build.gradle:
+1. add jitpack to your project's `build.gradle`:
 
-   `maven { url "https://jitpack.io" }`
-   
-2. add the compile statement to your module :
+        repositories {
+            maven { url "https://jitpack.io" }
+        }
+        
+2. add the compile statement to your module's `build.gradle`:
 
-   `compile 'com.github.MFlisar:RXBus:0.1'`
-   
-More about jitpack can be found here: https://jitpack.io/#MFlisar/RXBus/
+        dependencies {
+            compile 'com.github.MFlisar:RXBus:0.1'
+        }
 
 ### Usage
 
