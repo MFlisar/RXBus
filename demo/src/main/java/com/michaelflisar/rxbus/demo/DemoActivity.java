@@ -16,7 +16,9 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by flisar on 28.04.2016.
@@ -132,8 +134,9 @@ public class DemoActivity extends PauseAwareActivity
     private void createQueueObserver(final boolean observeOnBackground, Observable<Boolean> observableIsResumed)
     {
         Observable<String> observable = RXBus.get()
-                .observeEvent(String.class)
-                .lift(new RxValve<String>(observableIsResumed, 1000, isRXBusResumed()));
+                .observeEvent(String.class);
+
+        observable = observable.lift(new RxValve<String>(observableIsResumed, 1000, isRXBusResumed()));
 
         if (observeOnBackground)
             observable = observable.compose(RXUtil.<String>applyBackgroundSchedulers());
@@ -154,7 +157,12 @@ public class DemoActivity extends PauseAwareActivity
 
             @Override
             public void onNext(String s) {
-                Log.d(TAG, "QUEUED BUS (observeOnBackground=" + observeOnBackground + "): " + s + " | " + getIsResumedMessage());
+                if (isRXBusResumed())
+                    Log.d(TAG, "QUEUED BUS (observeOnBackground=" + observeOnBackground + "): " + s + " | " + getIsResumedMessage());
+                else
+                    // resend it to bus, we don't want to loose it and we can't use it now. Only happens, if event was send somewhere in onPause shortly before activity was paused!
+                    // will only be resend once, as currently the activity is paused
+                    RXBus.get().sendEvent(s + " | POSTPONED");
             }
         }));
     }

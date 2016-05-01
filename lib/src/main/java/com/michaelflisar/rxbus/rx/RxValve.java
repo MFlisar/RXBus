@@ -71,8 +71,8 @@ public final class RxValve<T> implements Operator<T, T> {
             this.error = new AtomicReference<>();
             this.queue = new SpscAtomicArrayQueue<>(prefetch);
             this.nl = NotificationLite.instance();
-            request(prefetch);
             this.valveOpen = defaultState;
+            request(prefetch);
         }
 
         @Override
@@ -177,6 +177,8 @@ public final class RxValve<T> implements Operator<T, T> {
                             break;
                         }
 
+                        actual.onNext(nl.getValue(o));
+
                         e++;
                         if (e == limit) {
                             r = BackpressureUtils.produced(requested, e);
@@ -244,4 +246,3 @@ public final class RxValve<T> implements Operator<T, T> {
         }
     }
 }
-
