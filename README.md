@@ -27,7 +27,7 @@ More about jitpack can be found here: https://jitpack.io/#MFlisar/RXBus/
 
 ##Usage (simple)
 
-Just use the `RXBus` class and subscribe to a special event, that's it. Just like following:
+Just use the `RXBus` class and subscribe to a special event, that's it. Or use the `RXBusBuilder` for more flexible usage. Just like following:
 
 * Variant 1:
 
@@ -58,7 +58,7 @@ Just use the `RXBus` class and subscribe to a special event, that's it. Just lik
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
 
     Subscription queuedSubscription = new RXBusBuilder<>(String.class)
-    // this enables the queuing mode!
+        // this enables the queuing mode!
         .queue(observableIsResumed, this)
         .withOnNext(new Action1<String>() {
             @Override
