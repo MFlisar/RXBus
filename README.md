@@ -1,3 +1,5 @@
+[![Release](https://jitpack.io/v/MFlisar/RXBus.svg)](https://jitpack.io/#MFlisar/RXBus)
+
 # RXBus
 RX based bus with lifecycle based queuing support
 
