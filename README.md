@@ -1,8 +1,5 @@
 [![Release](https://jitpack.io/v/MFlisar/RXBus.svg)](https://jitpack.io/#MFlisar/RXBus)
 
-### RXBus
-RX based bus with lifecycle based queuing support
-
 ### What does it do?
 
 * it allows you to post events to a bus
@@ -10,10 +7,6 @@ RX based bus with lifecycle based queuing support
 * it allows you to queue events until an activity is resumed (to make sure views are accessable for example)
 * it allows you to queue events as soon as activity is paused and emit events as soon soon as it is resumed
 * it's very **lightweight**
-
-### Demo
-
-Just check out the [DemoActivity](https://github.com/MFlisar/RXBus/blob/master/demo/src/main/java/com/michaelflisar/rxbus/demo/DemoActivity.java), it will show the base usage and the difference between the default and the queued `RXBus`
  
 ### Gradle
 
@@ -28,6 +21,10 @@ Just check out the [DemoActivity](https://github.com/MFlisar/RXBus/blob/master/d
 More about jitpack can be found here: https://jitpack.io/#MFlisar/RXBus/
 
 ### Usage
+
+**Demo**
+
+Just check out the [DemoActivity](https://github.com/MFlisar/RXBus/blob/master/demo/src/main/java/com/michaelflisar/rxbus/demo/DemoActivity.java), it will show the base usage and the difference between the default and the queued `RXBus`
 
 **Simple usage**
 
