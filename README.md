@@ -59,7 +59,7 @@ You can use this library to subscribe to events and only get them when your acti
 
     Subscription queuedSubscription = new RXBusBuilder<>(String.class)
         // this enables the queuing mode!
-        .queue(observableIsResumed, this)
+        .queue(observableIsResumed, busIsResumedProvider)
         .withOnNext(new Action1<String>() {
             @Override
             public void call(String s) {
