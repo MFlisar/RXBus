@@ -29,9 +29,26 @@ More about jitpack can be found here: https://jitpack.io/#MFlisar/RXBus/
 
 Just use the `RXBus` class and subscribe to a special event, that's it. Just like following:
 
-    Observable<TestEvent> observableTest = RXBus.get().observeEvent(TestEvent.class);
-    // do whatever you want with this observable => you'll get every event until you unsubscribe!
-    observableTest1.subscribe(...)
+* Variant 1:
+
+    `Observable<TestEvent> simpleObservable1 = RXBus.get().observeEvent(TestEvent.class);`
+
+* Variant 2:
+
+    `Observable<TestEvent> simpleObservable2 = new RXBusBuilder<>(TestEvent.class).buildObservable();`
+    
+* Variant 3:
+
+        Subscription simpleSubscription1 = new RXBusBuilder(TestEvent.class)
+            .withOnNext(new Action1<TestEvent>() {
+                @Override
+                public void call(TestEvent event) {
+                    // handle event...
+                }
+            })
+            .buildSubscription();
+
+####Sending an event
    
     // Send an event to the bus
     RXBus.get().sendEvent(new TestEvent());
@@ -40,25 +57,24 @@ Just use the `RXBus` class and subscribe to a special event, that's it. Just lik
 
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
 
-    Observable<RXQueueEvent<TestEvent>> observableTest = RXQueueBus.get().observeEventOnResume(TestEvent.class, this);
-    // subscribe to this observable whenever you want, from the point where you subscribed, you will get ALL
-    // events until you unsubscribe, but you won't get any event BEFORE the activity is resumed
-    // and not after the activity is paused! unsubscribe in your activity's onDestroy method!
-    // See how to do that in the simple demo activity
-    RXQueueBus.get().subscribe(observableTest, this, new Observer<TestEvent>()
-    {
-        @Override
-        public void onCompleted() { }
+    Subscription queuedSubscription = new RXBusBuilder<>(String.class)
+    // this enables the queuing mode!
+        .queue(observableIsResumed, this)
+        .withOnNext(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                // security check: it may happen that the valve evaluates the is resumed state while activity is resumed and that the event may be emited
+                // when the activity is already paused => we just repost the event, this will only happen once, as the activity is currently paused
+                // this is only the current workaround!!!
 
-        @Override
-        public void onError(Throwable e) { }
-
-        @Override
-        public void onNext(TestEvent data)
-        {
-            // activity IS resumed!!! update your views...
-        }
-	   });
+                if (RXUtil.safetyQueueCheck(s, DemoActivity.this))
+                {
+                    // handle the event, the activity is resumed!
+                    // if activity is not resumed, the safetyQueueCheck function will resend the event when activity is resumed
+                }
+            }
+        })
+        .buildSubscription();
 
 ##Credits
 
