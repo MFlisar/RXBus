@@ -2,12 +2,16 @@ package com.michaelflisar.rxbus.rx;
 
 import android.util.Log;
 
+import com.michaelflisar.rxbus.RXBus;
 import com.michaelflisar.rxbus.interfaces.IRXBusIsResumedProvider;
 import com.michaelflisar.rxbus.interfaces.IRXBusResumedListener;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -73,5 +77,16 @@ public class RXUtil
                 provider.addResumedListener(resumedListener, false);
             }
         });
+    }
+
+    public static <T> boolean safetyQueueCheck(T event, IRXBusIsResumedProvider isResumedProvider)
+    {
+        if (isResumedProvider.isRXBusResumed())
+            return true;
+        else
+        {
+            RXBus.get().sendEvent(event);
+            return false;
+        }
     }
 }
