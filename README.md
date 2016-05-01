@@ -1,9 +1,9 @@
 [![Release](https://jitpack.io/v/MFlisar/RXBus.svg)](https://jitpack.io/#MFlisar/RXBus)
 
-# RXBus
+### RXBus
 RX based bus with lifecycle based queuing support
 
-##What does it do?
+### What does it do?
 
 * it allows you to post events to a bus
 * it allows you to subscribe to special events whereever you want
@@ -11,23 +11,25 @@ RX based bus with lifecycle based queuing support
 * it allows you to queue events as soon as activity is paused and emit events as soon soon as it is resumed
 * it's very **lightweight**
 
-##Demo
+### Demo
 
-Just check out the DemoActivity, it will show the base usage and the difference between the `RXBus` and the `RXQueueBus`
+Just check out the [DemoActivity](https://github.com/MFlisar/RXBus/blob/master/demo/src/main/java/com/michaelflisar/rxbus/demo/DemoActivity.java), it will show the base usage and the difference between the default and the queued `RXBus`
  
-##Gradle
+### Gradle
 
 1. add jitpack to your project's build.gradle:
 
    `maven { url "https://jitpack.io" }`
    
-2. add the compile statement to your module (currently only snapshot exists):
+2. add the compile statement to your module :
 
-   `compile 'com.github.MFlisar:RXBus:-SNAPSHOT'`
+   `compile 'com.github.MFlisar:RXBus:0.1'`
    
 More about jitpack can be found here: https://jitpack.io/#MFlisar/RXBus/
 
-##Usage (simple)
+### Usage
+
+**Simple usage**
 
 Just use the `RXBus` class and subscribe to a special event, that's it. Or use the `RXBusBuilder` for more flexible usage. Just like following:
 
@@ -50,12 +52,12 @@ Just use the `RXBus` class and subscribe to a special event, that's it. Or use t
             })
             .buildSubscription();
 
-####Sending an event
+**Sending an event**
    
     // Send an event to the bus
     RXBus.get().sendEvent(new TestEvent());
     
-##Usage (advanced)
+**Advanced usage** 
 
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
 
@@ -78,6 +80,6 @@ You can use this library to subscribe to events and only get them when your acti
         })
         .buildSubscription();
 
-##Credits
+### Credits
 
 The `RxValve` class is from this gist: https://gist.github.com/akarnokd/1c54e5a4f64f9b1e46bdcf62b4222f08
