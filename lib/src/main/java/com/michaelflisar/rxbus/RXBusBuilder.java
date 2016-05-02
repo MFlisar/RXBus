@@ -132,7 +132,7 @@ public class RXBusBuilder<T>
         if (mSubscriber == null && mSubscriptionObserver == null)
         {
             Action1<? super T> actionNext = mActionNext;
-            if (mQueueSubscriptionSafetyCheckEnabled)
+            if (mQueueEvents && mQueueSubscriptionSafetyCheckEnabled)
                 actionNext = InternalRXBusUtil.wrapQueueAction(mActionNext, mIsResumedProvider);
 
             if (mActionError != null && mActionOnComplete != null)
@@ -144,14 +144,14 @@ public class RXBusBuilder<T>
         else if (mSubscriber == null)
         {
             Observer<? super T> subscriptionObserver = mSubscriptionObserver;
-            if (mQueueSubscriptionSafetyCheckEnabled)
+            if (mQueueEvents && mQueueSubscriptionSafetyCheckEnabled)
                 subscriptionObserver = InternalRXBusUtil.wrapObserver(mSubscriptionObserver, mIsResumedProvider);
             return observable.subscribe(subscriptionObserver);
         }
         else if (mSubscriptionObserver == null)
         {
             Subscriber<? super T> subscriber = mSubscriber;
-            if (mQueueSubscriptionSafetyCheckEnabled)
+            if (mQueueEvents && mQueueSubscriptionSafetyCheckEnabled)
                 subscriber = InternalRXBusUtil.wrapSubscriber(mSubscriber, mIsResumedProvider);
             return observable.subscribe(subscriber);
         }
