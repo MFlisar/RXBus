@@ -63,15 +63,7 @@ Subscription queuedSubscription = new RXBusBuilder<>(String.class)
     .withOnNext(new Action1<String>() {
         @Override
         public void call(String s) {
-            // security check: it may happen that the valve evaluates the is resumed state while activity is resumed and that the event may be emited
-            // when the activity is already paused => we just repost the event, this will only happen once, as the activity is currently paused
-            // this is only the current workaround!!!
-
-            if (RXUtil.safetyQueueCheck(s, DemoActivity.this))
-            {
-                // handle the event, the activity is resumed!
-                // if activity is not resumed, the safetyQueueCheck function will resend the event when activity is resumed
-            }
+            // activity IS resumed, you can safely update your UI for example
         }
     })
     .buildSubscription();
