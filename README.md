@@ -11,17 +11,17 @@
 ### Gradle (via [JitPack.io](https://jitpack.io/))
 
 1. add jitpack to your project's `build.gradle`:
-
+```groovy
         repositories {
             maven { url "https://jitpack.io" }
         }
-        
+```
 2. add the compile statement to your module's `build.gradle`:
-
+```groovy
         dependencies {
             compile 'com.github.MFlisar:RXBus:0.1'
         }
-
+```
 ### Usage
 
 **Demo**
@@ -31,7 +31,7 @@ Just check out the [DemoActivity](https://github.com/MFlisar/RXBus/blob/master/d
 **Simple usage**
 
 Just use the `RXBus` class and subscribe to a special event, that's it. Or use the `RXBusBuilder` for more flexible usage. Just like following:
-
+```java
     // Variant 1:
     Observable<TestEvent> simpleObservable1 = RXBus.get().observeEvent(TestEvent.class);
     
@@ -47,16 +47,16 @@ Just use the `RXBus` class and subscribe to a special event, that's it. Or use t
             }
         })
         .buildSubscription();
-
+```
 **Sending an event**
-   
+```java
     // Send an event to the bus
     RXBus.get().sendEvent(new TestEvent());
-    
+```
 **Advanced usage** 
 
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
-
+```java
     Subscription queuedSubscription = new RXBusBuilder<>(String.class)
         // this enables the queuing mode!
         .queue(observableIsResumed, busIsResumedProvider)
@@ -75,7 +75,7 @@ You can use this library to subscribe to events and only get them when your acti
             }
         })
         .buildSubscription();
-
+```
 ### Credits
 
 The `RxValve` class is from this gist: https://gist.github.com/akarnokd/1c54e5a4f64f9b1e46bdcf62b4222f08
