@@ -2,9 +2,9 @@
 
 ### What does it do?
 
-* it allows you to post events to a bus
-* it allows you to subscribe to special events whereever you want
-* it allows you to queue events until an activity is resumed (to make sure views are accessable for example)
+* it allows you to *post events* to a bus
+* it allows you to *subscribe to special events* whereever you want
+* it allows you to *queue events* until an activity is resumed (to make sure views are accessable for example)
 * it allows you to queue events as soon as activity is paused and emit events as soon soon as it is resumed
 * it's very **lightweight**
  
