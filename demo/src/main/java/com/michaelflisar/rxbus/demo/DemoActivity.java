@@ -75,20 +75,8 @@ public class DemoActivity extends PauseAwareActivity
                     .withOnNext(new Action1<String>() {
                         @Override
                         public void call(String s) {
-                            // security check: it may happen that the valve evaluates the is resumed state while activity is resumed and that the event may be emited
-                            // when the activity is already paused => we just repost the event, this will only happen once, as the activity is currently paused
-                            // this is only the current workaround!!!
-
-                            // Solution for projects:
-//                            if (RXUtil.safetyQueueCheck(s, DemoActivity.this))
-//                                Log.d(TAG, "QUEUED BUS: " + s + " | " + getIsResumedMessage());
-
-                            // for demo purposes, we adjust the event to see the effect in the logs
-                            // this will happen very rarely!!!
-                            if (isRXBusResumed())
-                                Log.d(TAG, "QUEUED BUS: " + s + " | " + getIsResumedMessage());
-                            else
-                                RXBus.get().sendEvent(s + "POSTPONED");
+                            // activity IS resumed, you can safely update your UI for example
+                            Log.d(TAG, "QUEUED BUS: " + s + " | " + getIsResumedMessage());
                         }
                     })
                     .buildSubscription();

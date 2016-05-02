@@ -23,6 +23,7 @@ public class RXBusBuilder<T>
     private Observable<Boolean> mObservableIsResumed;
     private IRXBusIsResumedProvider mIsResumedProvider;
     private int mValvePrefetch = 1000;
+    private boolean mQueueSubscriptionSafetyCheckEnabled = true;
 
     private Action1<? super T> mActionNext;
     private Action1<Throwable> mActionError;
@@ -59,6 +60,13 @@ public class RXBusBuilder<T>
         mIsResumedProvider = isResumedProvider;
         return this;
     }
+
+    public RXBusBuilder<T> withQueueSubscriptionSafetyCheckEnabled(boolean enabled)
+    {
+        mQueueSubscriptionSafetyCheckEnabled = enabled;
+        return this;
+    }
+
 
     public RXBusBuilder<T> withValvePrefetch(int prefetch)
     {
@@ -123,19 +131,29 @@ public class RXBusBuilder<T>
 
         if (mSubscriber == null && mSubscriptionObserver == null)
         {
+            Action1<? super T> actionNext = mActionNext;
+            if (mQueueSubscriptionSafetyCheckEnabled)
+                actionNext = InternalRXBusUtil.wrapQueueAction(mActionNext, mIsResumedProvider);
+
             if (mActionError != null && mActionOnComplete != null)
-                return observable.subscribe(mActionNext, mActionError, mActionOnComplete);
+                return observable.subscribe(actionNext, mActionError, mActionOnComplete);
             else if (mActionError != null)
-                return observable.subscribe(mActionNext, mActionError);
-            return observable.subscribe(mActionNext);
+                return observable.subscribe(actionNext, mActionError);
+            return observable.subscribe(actionNext);
         }
         else if (mSubscriber == null)
         {
-            return observable.subscribe(mSubscriptionObserver);
+            Observer<? super T> subscriptionObserver = mSubscriptionObserver;
+            if (mQueueSubscriptionSafetyCheckEnabled)
+                subscriptionObserver = InternalRXBusUtil.wrapObserver(mSubscriptionObserver, mIsResumedProvider);
+            return observable.subscribe(subscriptionObserver);
         }
         else if (mSubscriptionObserver == null)
         {
-            return observable.subscribe(mSubscriber);
+            Subscriber<? super T> subscriber = mSubscriber;
+            if (mQueueSubscriptionSafetyCheckEnabled)
+                subscriber = InternalRXBusUtil.wrapSubscriber(mSubscriber, mIsResumedProvider);
+            return observable.subscribe(subscriber);
         }
         else
             throw new RuntimeException("Subscription can't be build, because you have set more than one of following: nnext action, subscriber or observable!");
