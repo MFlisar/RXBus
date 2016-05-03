@@ -26,6 +26,7 @@ public class RXBusBuilder<T>
     private IRXBusIsResumedProvider mIsResumedProvider;
     private int mValvePrefetch = 1000;
     private boolean mQueueSubscriptionSafetyCheckEnabled = true;
+    private boolean mBackpressureObservableEnabled = true;
 
     private Action1<? super T> mActionNext;
     private Action1<Throwable> mActionError;
@@ -91,6 +92,11 @@ public class RXBusBuilder<T>
         return this;
     }
 
+    public RXBusBuilder<T> withBackpressureObservableEnabled(boolean enabled)
+    {
+        mBackpressureObservableEnabled = enabled;
+        return this;
+    }
 
     public RXBusBuilder<T> withValvePrefetch(int prefetch)
     {
@@ -144,6 +150,9 @@ public class RXBusBuilder<T>
             observable = observable.compose(RXUtil.<T>applyBackgroundSchedulers());
         else if (mBusMode == RXBusMode.Main)
             observable = observable.compose(RXUtil.<T>applySchedulars());
+
+        if (mBackpressureObservableEnabled)
+            observable = observable.onBackpressureBuffer();
 
         if (mQueueEvents)
             observable = observable.lift(new RxValve<T>(mObservableIsResumed, mValvePrefetch, mIsResumedProvider.isRXBusResumed()));
