@@ -76,7 +76,7 @@ public class RXUtil
 
                 provider.addResumedListener(resumedListener, false);
             }
-        });
+        }).onBackpressureBuffer();
     }
 
     public static <T> boolean safetyQueueCheck(T event, IRXBusIsResumedProvider isResumedProvider)
