@@ -69,6 +69,10 @@ Subscription queuedSubscription = new RXBusBuilder<>(String.class)
     })
     .buildSubscription();
 ```
+
+### TODO
+
+* instead of "listening" to class bound events, an additional key based bus should be added to make it possible to selectively listen to events of one kind...
 ### Credits
 
 The `RxValve` class is from this gist: https://gist.github.com/akarnokd/1c54e5a4f64f9b1e46bdcf62b4222f08
