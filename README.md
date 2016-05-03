@@ -51,10 +51,14 @@ Subscription simpleSubscription1 = new RXBusBuilder(TestEvent.class)
 ```
 **Sending an event**
 ```java
-// Send an event to the bus
+// Send an event to the bus - all observers that observe this class WITHOUT a key will receive this event
 RXBus.get().sendEvent(new TestEvent());
+// Send an event to the bus - only observers that observe the class AND key will receive this event
+RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1);
+// Send an event to the bus - all observers that either observe the class or the class AND key will receive this event
+RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1, true);
 ```
-**Advanced usage** 
+**Advanced usage - QUEUING**
 
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
 ```java
@@ -70,11 +74,22 @@ Subscription queuedSubscription = new RXBusBuilder<>(String.class)
     .buildSubscription();
 ```
 
-### TODO
+**Advanced usage - KEYS**
 
-* update readme to show key based bus system
-* instead of "listening" to class bound events, an additional key based bus should be added to make it possible to selectively listen to events of one kind...
-
+You can use this library to subscribe to events of a typ and ONLY get them when it was send to the bus with a special key (and only when your activity is resumed, as this example shows via `.queue()`), so that you can distinct event subscriptions of the same class based on a key (the key can be an `Integer` or a `String`). Just like following:
+```java
+Subscription queuedSubscription = new RXBusBuilder<>(String.class)
+    // this enables the binding to the key
+    .withKey(R.id.custom_event_id_2)
+    .queue(observableIsResumed, busIsResumedProvider)
+    .withOnNext(new Action1<String>() {
+        @Override
+        public void call(String s) {
+            // activity IS resumed, you can safely update your UI for example
+        }
+    })
+    .buildSubscription();
+```
 ### Credits
 
 The `RxValve` class is from this gist: https://gist.github.com/akarnokd/1c54e5a4f64f9b1e46bdcf62b4222f08
