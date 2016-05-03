@@ -17,9 +17,11 @@ import rx.functions.Action1;
  */
 public class RXBusBuilder<T>
 {
+    private RXQueueKey<T> mKey;
+    private Class<T> mKeyClass;
+
     private boolean mQueueEvents;
     private RXBusMode mBusMode;
-    private Class<T> mEventClass;
     private Observable<Boolean> mObservableIsResumed;
     private IRXBusIsResumedProvider mIsResumedProvider;
     private int mValvePrefetch = 1000;
@@ -33,8 +35,33 @@ public class RXBusBuilder<T>
 
     public RXBusBuilder(Class<T> eventClass)
     {
-        mEventClass = eventClass;
+        mKeyClass = eventClass;
+        init();
+    }
 
+    public RXBusBuilder(Class<T> eventClass, RXQueueKey<T> key)
+    {
+        mKey = key;
+        mKeyClass = eventClass;
+        init();
+    }
+
+    public RXBusBuilder(Class<T> eventClass, int key)
+    {
+        mKey = new RXQueueKey(eventClass, key);
+        mKeyClass = eventClass;
+        init();
+    }
+
+    public RXBusBuilder(Class<T> eventClass, String key)
+    {
+        mKey = new RXQueueKey(eventClass, key);
+        mKeyClass = eventClass;
+        init();
+    }
+
+    private void init()
+    {
         mQueueEvents = false;
         mBusMode = RXBusMode.Background;
         mObservableIsResumed = null;
@@ -110,7 +137,12 @@ public class RXBusBuilder<T>
 
     public Observable<T> buildObservable()
     {
-        Observable<T> observable = RXBus.get().observeEvent(mEventClass);
+        Observable<T> observable = null;
+        if (mKey != null)
+            observable = RXBus.get().observeEvent(mKey);
+        else
+            observable = RXBus.get().observeEvent(mKeyClass);
+
         if (mBusMode == RXBusMode.Background)
             observable = observable.compose(RXUtil.<T>applyBackgroundSchedulers());
         else if (mBusMode == RXBusMode.Main)

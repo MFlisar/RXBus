@@ -83,6 +83,35 @@ public class DemoActivity extends PauseAwareActivity
             mSubscriptions.add(queuedSubscription);
 
             // -----------------
+            // Usage with keys
+            // you can use Integer and String keys!
+            // -----------------
+
+            Subscription queuedSubscriptionKey1 = new RXBusBuilder<>(String.class, R.id.custom_event_id_1)
+                    .queue(observableIsResumed, this)
+                    .withOnNext(new Action1<String>() {
+                        @Override
+                        public void call(String s) {
+                            // activity IS resumed, you can safely update your UI for example
+                            Log.d(TAG, "QUEUED BUS - KEY 1: " + s + " | " + getIsResumedMessage());
+                        }
+                    })
+                    .buildSubscription();
+            mSubscriptions.add(queuedSubscriptionKey1);
+
+            Subscription queuedSubscriptionKey2 = new RXBusBuilder<>(String.class, R.id.custom_event_id_2)
+                    .queue(observableIsResumed, this)
+                    .withOnNext(new Action1<String>() {
+                        @Override
+                        public void call(String s) {
+                            // activity IS resumed, you can safely update your UI for example
+                            Log.d(TAG, "QUEUED BUS - KEY 2: " + s + " | " + getIsResumedMessage());
+                        }
+                    })
+                    .buildSubscription();
+            mSubscriptions.add(queuedSubscriptionKey2);
+
+            // -----------------
             // Send some events
             // -----------------
 
@@ -101,6 +130,13 @@ public class DemoActivity extends PauseAwareActivity
                         RXBus.get().sendEvent(getLogMessage("onCreate", "some thread i=" + i));
                 }
             }).start();
+
+            // lets send some events bound to a key (can be a string or an integer)
+            for (int i = 0; i < 5; i++)
+                RXBus.get().sendEvent(getLogMessage("onCreate", "KEY 1 main thread i=" + i), R.id.custom_event_id_1);
+            for (int i = 0; i < 5; i++)
+                RXBus.get().sendEvent(getLogMessage("onCreate", "KEY 2 main thread i=" + i), R.id.custom_event_id_2);
+
         }
     }
 
