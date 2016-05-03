@@ -60,13 +60,7 @@ public class RXBus
      */
     public synchronized <T> void sendEvent(T event, Integer key)
     {
-        RXBusEventIsNullException.checkEvent(event);
-        RXBusKeyIsNullException.checkKey(key);
-
-        SerializedSubject subject = getSubject(new RXQueueKey(event.getClass(), key), false);
-        // only send event, if subject exists => this means someone has at least once subscribed to it
-        if (subject != null)
-            subject.onNext(event);
+        sendEvent(event, key, false);
     }
 
     /**
@@ -78,13 +72,53 @@ public class RXBus
      */
     public synchronized <T> void sendEvent(T event, String key)
     {
+        sendEvent(event, key, false);
+    }
+
+    /**
+     * Sends an event to the bus
+     * <p>
+     * @param  event  the event that should be broadcasted to the bus
+     * @param  key  the key this event should be broadcasted to
+     * @param  sendToDefaultBusAsWell  if true, all observers of the event class will receive this event as well
+     */
+    public synchronized <T> void sendEvent(T event, Integer key, boolean sendToDefaultBusAsWell)
+    {
         RXBusEventIsNullException.checkEvent(event);
         RXBusKeyIsNullException.checkKey(key);
 
+        // 1) send to key bound bus
         SerializedSubject subject = getSubject(new RXQueueKey(event.getClass(), key), false);
         // only send event, if subject exists => this means someone has at least once subscribed to it
         if (subject != null)
             subject.onNext(event);
+
+        // 2) send to unbound bus
+        if (sendToDefaultBusAsWell)
+            sendEvent(event);
+    }
+
+    /**
+     * Sends an event to the bus
+     * <p>
+     * @param  event  the event that should be broadcasted to the bus
+     * @param  key  the key this event should be broadcasted to
+     * @param  sendToDefaultBusAsWell  if true, all observers of the event class will receive this event as well
+     */
+    public synchronized <T> void sendEvent(T event, String key, boolean sendToDefaultBusAsWell)
+    {
+        RXBusEventIsNullException.checkEvent(event);
+        RXBusKeyIsNullException.checkKey(key);
+
+        // 1) send to key bound bus
+        SerializedSubject subject = getSubject(new RXQueueKey(event.getClass(), key), false);
+        // only send event, if subject exists => this means someone has at least once subscribed to it
+        if (subject != null)
+            subject.onNext(event);
+
+        // 2) send to unbound bus
+        if (sendToDefaultBusAsWell)
+            sendEvent(event);
     }
 
     // ---------------------------

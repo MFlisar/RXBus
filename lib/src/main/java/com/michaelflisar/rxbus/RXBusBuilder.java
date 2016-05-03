@@ -39,27 +39,6 @@ public class RXBusBuilder<T>
         init();
     }
 
-    public RXBusBuilder(Class<T> eventClass, RXQueueKey<T> key)
-    {
-        mKey = key;
-        mKeyClass = eventClass;
-        init();
-    }
-
-    public RXBusBuilder(Class<T> eventClass, int key)
-    {
-        mKey = new RXQueueKey(eventClass, key);
-        mKeyClass = eventClass;
-        init();
-    }
-
-    public RXBusBuilder(Class<T> eventClass, String key)
-    {
-        mKey = new RXQueueKey(eventClass, key);
-        mKeyClass = eventClass;
-        init();
-    }
-
     private void init()
     {
         mQueueEvents = false;
@@ -72,6 +51,24 @@ public class RXBusBuilder<T>
         mActionOnComplete = null;
         mSubscriptionObserver = null;
         mSubscriber = null;
+    }
+
+    public RXBusBuilder<T> withKey(RXQueueKey<T> key)
+    {
+        mKey = key;
+        return this;
+    }
+
+    public RXBusBuilder<T> withKey(int key)
+    {
+        mKey = new RXQueueKey(mKeyClass, key);
+        return this;
+    }
+
+    public RXBusBuilder<T> withKey(String key)
+    {
+        mKey = new RXQueueKey(mKeyClass, key);
+        return this;
     }
 
     public RXBusBuilder<T> withBusMode(RXBusMode mode)

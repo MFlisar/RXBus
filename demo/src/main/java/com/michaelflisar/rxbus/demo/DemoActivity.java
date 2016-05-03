@@ -69,6 +69,7 @@ public class DemoActivity extends PauseAwareActivity
             // Queued bus
             // -----------------
 
+            // Explanation this will retrieve all String events, if they are not exclusively bound to a key as well
             Subscription queuedSubscription = new RXBusBuilder<>(String.class)
                     // this enables the queuing mode!
                     .queue(observableIsResumed, this)
@@ -87,7 +88,10 @@ public class DemoActivity extends PauseAwareActivity
             // you can use Integer and String keys!
             // -----------------
 
-            Subscription queuedSubscriptionKey1 = new RXBusBuilder<>(String.class, R.id.custom_event_id_1)
+            // Explanation: this will retrieve all String events that are bound to the key passed to the builder
+            Subscription queuedSubscriptionKey1 = new RXBusBuilder<>(String.class)
+                    // this enables the key bound mode
+                    .withKey(R.id.custom_event_id_1)
                     .queue(observableIsResumed, this)
                     .withOnNext(new Action1<String>() {
                         @Override
@@ -99,7 +103,9 @@ public class DemoActivity extends PauseAwareActivity
                     .buildSubscription();
             mSubscriptions.add(queuedSubscriptionKey1);
 
-            Subscription queuedSubscriptionKey2 = new RXBusBuilder<>(String.class, R.id.custom_event_id_2)
+            // Explanation: this will retrieve all String events that are bound to the key passed to the builder
+            Subscription queuedSubscriptionKey2 = new RXBusBuilder<>(String.class)
+                    .withKey(R.id.custom_event_id_2)
                     .queue(observableIsResumed, this)
                     .withOnNext(new Action1<String>() {
                         @Override
@@ -132,10 +138,12 @@ public class DemoActivity extends PauseAwareActivity
             }).start();
 
             // lets send some events bound to a key (can be a string or an integer)
+            // 1 loop: sends events to the given key ONLY
+            // 2 loop: sends events to all observers of the key AND to all simple String event observer
             for (int i = 0; i < 5; i++)
                 RXBus.get().sendEvent(getLogMessage("onCreate", "KEY 1 main thread i=" + i), R.id.custom_event_id_1);
             for (int i = 0; i < 5; i++)
-                RXBus.get().sendEvent(getLogMessage("onCreate", "KEY 2 main thread i=" + i), R.id.custom_event_id_2);
+                RXBus.get().sendEvent(getLogMessage("onCreate", "KEY 2 (AND ALL String listeners) main thread i=" + i), R.id.custom_event_id_2, true);
 
         }
     }
