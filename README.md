@@ -72,6 +72,7 @@ Subscription queuedSubscription = new RXBusBuilder<>(String.class)
 
 ### TODO
 
+* update readme to show key based bus system
 * instead of "listening" to class bound events, an additional key based bus should be added to make it possible to selectively listen to events of one kind...
 
 ### Credits
