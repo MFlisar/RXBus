@@ -80,7 +80,7 @@ You can use this library to subscribe to events of a typ and ONLY get them when 
 ```java
 Subscription queuedSubscription = new RXBusBuilder<>(String.class)
     // this enables the binding to the key
-    .withKey(R.id.custom_event_id_2)
+    .withKey(R.id.observer_key_1)
     .queue(observableIsResumed, busIsResumedProvider)
     .withOnNext(new Action1<String>() {
         @Override
