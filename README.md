@@ -20,7 +20,7 @@ repositories {
 2. add the compile statement to your module's `build.gradle`:
 ```groovy
 dependencies {
-    compile 'com.github.MFlisar:RXBus:0.4'
+    compile 'com.github.MFlisar:RXBus:0.5'
 }
 ```
 ### Usage
@@ -37,10 +37,10 @@ Just use the `RXBus` class and subscribe to a special event, that's it. Or use t
 Observable<TestEvent> simpleObservable1 = RXBus.get().observeEvent(TestEvent.class);
 
 // Variant 2 - create observable with the BUILDER:
-Observable<TestEvent> simpleObservable2 = new RXBusBuilder<>(TestEvent.class).buildObservable();
+Observable<TestEvent> simpleObservable2 = RXBusBuilder.create(TestEvent.class).buildObservable();
 
 // Variant 3 - subscribe with the BUILDER:
-Subscription simpleSubscription1 = new RXBusBuilder(TestEvent.class)
+Subscription simpleSubscription1 = RXBusBuilder.create(TestEvent.class)
     .withOnNext(new Action1<TestEvent>() {
         @Override
         public void call(TestEvent event) {
@@ -66,7 +66,7 @@ RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1, true);
 
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
 ```java
-Subscription queuedSubscription = new RXBusBuilder<>(TestEvent.class)
+Subscription queuedSubscription = RXBusBuilder.create(TestEvent.class)
     // this enables the queuing mode!
     .queue(observableIsResumed, busIsResumedProvider)
     .withOnNext(new Action1<TestEvent>() {
@@ -86,7 +86,7 @@ Subscription queuedSubscription = new RXBusBuilder<>(TestEvent.class)
 
 You can use this library to subscribe to events of a typ and ONLY get them when it was send to the bus with a special key (and only when your activity is resumed, as this example shows via `.queue()`), so that you can distinct event subscriptions of the same class based on a key (the key can be an `Integer` or a `String`). Just like following:
 ```java
-Subscription queuedSubscription = new RXBusBuilder<>(String.class)
+Subscription queuedSubscription = RXBusBuilder.create(String.class)
     // this enables the binding to the key
     .withKey(R.id.observer_key_1)
     .queue(observableIsResumed, busIsResumedProvider)
