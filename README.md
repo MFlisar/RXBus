@@ -28,7 +28,7 @@ dependencies {
 **Content**
 
 - [Demo](#demo)
-- [Simple usage](simple-usage)
+- [Simple usage](simple)
 - [Sending an event](sending-an-event)
 - [Advanced usage - QUEUING](advanced-usage---queueing)
 - [Advanced usage - KEYS](advanced-usage---keys)
