@@ -25,11 +25,21 @@ dependencies {
 ```
 ### Usage
 
-**Demo**
+**Content**
+
+- [Demo](#demo)
+- [Simple usage](simple-usage)
+- [Sending an event](sending-an-event)
+- [Advanced usage - QUEUING](advanced-usage---queueing)
+- [Advanced usage - KEYS](advanced-usage---keys)
+- [Advanced usage - bus observable processor](advanced-usage---bus-observable-processor)
+- [Helper class - `RXSubscriptionManager`](helper-class---`RXSubscriptionManager`)
+
+####Demo
 
 Just check out the [DemoActivity](https://github.com/MFlisar/RXBus/blob/master/demo/src/main/java/com/michaelflisar/rxbus/demo/DemoActivity.java), it will show the base usage and the difference between the default and the queued `RXBus`
 
-**Simple usage**
+####Simple usage
 
 Just use the `RXBus` class and subscribe to a special event, that's it. Or use the `RXBusBuilder` for more flexible usage. Just like following:
 ```java
@@ -53,7 +63,7 @@ Subscription simpleSubscription1 = RXBusBuilder.create(TestEvent.class)
     })
     .buildSubscription();
 ```
-**Sending an event**
+####Sending an event
 ```java
 // Send an event to the bus - all observers that observe this class WITHOUT a key will receive this event
 RXBus.get().sendEvent(new TestEvent());
@@ -62,7 +72,7 @@ RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1);
 // Send an event to the bus - all observers that either observe the class or the class AND key will receive this event
 RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1, true);
 ```
-**Advanced usage - QUEUING**
+####Advanced usage - QUEUING
 
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
 ```java
@@ -82,7 +92,7 @@ Subscription queuedSubscription = RXBusBuilder.create(TestEvent.class)
     .buildSubscription();
 ```
 
-**Advanced usage - KEYS**
+####Advanced usage - KEYS
 
 You can use this library to subscribe to events of a typ and ONLY get them when it was send to the bus with a special key (and only when your activity is resumed, as this example shows via `.queue()`), so that you can distinct event subscriptions of the same class based on a key (the key can be an `Integer` or a `String`). Just like following:
 ```java
@@ -103,7 +113,7 @@ Subscription queuedSubscription = RXBusBuilder.create(String.class)
     .buildSubscription();
 ```
 
-**Advanced usage - bus observable processor**
+####Advanced usage - bus observable processor
 
 Use this if you want to process the observed event before you emit it.
 
@@ -137,7 +147,7 @@ RXBusBuilder.create(String.class, Integer.class, observableProcessor)
     .buildSubscription();
 ```
 
-**Helper class - `RXSubscriptionManager`**
+####Helper class - `RXSubscriptionManager`
 
 This class helps to bind subscriptions to objects and offers an easy unsubscribe all bound subscription function.
 
