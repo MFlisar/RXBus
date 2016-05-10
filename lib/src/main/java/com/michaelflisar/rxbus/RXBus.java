@@ -2,6 +2,7 @@ package com.michaelflisar.rxbus;
 
 import com.michaelflisar.rxbus.exceptions.RXBusEventIsNullException;
 import com.michaelflisar.rxbus.exceptions.RXBusKeyIsNullException;
+import com.michaelflisar.rxbus.rx.RXQueueKey;
 
 import java.util.HashMap;
 

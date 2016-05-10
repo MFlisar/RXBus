@@ -10,7 +10,7 @@ import rx.functions.Action1;
 /**
  * Created by flisar on 02.05.2016.
  */
-public class InternalRXBusUtil
+public class RXBusUtil
 {
     protected static <T> Action1<T> wrapQueueAction(Action1<T> action, IRXBusIsResumedProvider isResumedProvider)
     {

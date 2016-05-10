@@ -1,4 +1,4 @@
-package com.michaelflisar.rxbus;
+package com.michaelflisar.rxbus.rx;
 
 /**
  * Created by flisar on 03.05.2016.
