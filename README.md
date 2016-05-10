@@ -45,6 +45,10 @@ Subscription simpleSubscription1 = new RXBusBuilder(TestEvent.class)
         @Override
         public void call(TestEvent event) {
             // handle event...
+            
+            // event MUST have been send with either of following:
+            // RXBus.get().sendEvent(new TestEvent()); => class bound bus usage
+            // RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1, true); => key bound bus usage, with sendToDefaultBusAsWell = true, which will result in that all class bound observers (like this one) retrieve this event as well
         }
     })
     .buildSubscription();
@@ -62,13 +66,17 @@ RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1, true);
 
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
 ```java
-Subscription queuedSubscription = new RXBusBuilder<>(String.class)
+Subscription queuedSubscription = new RXBusBuilder<>(TestEvent.class)
     // this enables the queuing mode!
     .queue(observableIsResumed, busIsResumedProvider)
-    .withOnNext(new Action1<String>() {
+    .withOnNext(new Action1<TestEvent>() {
         @Override
-        public void call(String s) {
+        public void call(TestEvent s) {
             // activity IS resumed, you can safely update your UI for example
+            
+            // event MUST have been send with either of following:
+            // RXBus.get().sendEvent(new TestEvent()); => class bound bus usage
+            // RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1, true); => key bound bus usage, with sendToDefaultBusAsWell = true, which will result in that all class bound observers (like this one) retrieve this event as well
         }
     })
     .buildSubscription();
@@ -86,6 +94,10 @@ Subscription queuedSubscription = new RXBusBuilder<>(String.class)
         @Override
         public void call(String s) {
             // activity IS resumed, you can safely update your UI for example
+            
+            // event MUST have been with either of those:
+            // RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1); => key bound bus usage, class bound observers WON't retrieve this event as well!
+            // RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1, true); => key bound bus usage, with sendToDefaultBusAsWell = true, resulting in class bound observers WILL retrieve this event as well!
         }
     })
     .buildSubscription();
