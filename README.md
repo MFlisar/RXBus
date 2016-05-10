@@ -88,7 +88,7 @@ You can use this library to subscribe to events of a typ and ONLY get them when 
 ```java
 Subscription queuedSubscription = RXBusBuilder.create(String.class)
     // this enables the binding to the key
-    .withKey(R.id.observer_key_1)
+    .withKey(R.id.observer_key_1) // you can provide multiple keys as well
     .queue(observableIsResumed, busIsResumedProvider)
     .withOnNext(new Action1<String>() {
         @Override
@@ -102,6 +102,11 @@ Subscription queuedSubscription = RXBusBuilder.create(String.class)
     })
     .buildSubscription();
 ```
+
+**Advanced usage - bus observable processor**
+
+TODO
+
 ### Credits
 
 The `RxValve` class is from this gist: https://gist.github.com/akarnokd/1c54e5a4f64f9b1e46bdcf62b4222f08
