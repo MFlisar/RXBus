@@ -141,7 +141,18 @@ RXBusBuilder.create(String.class, Integer.class, observableProcessor)
 
 This class helps to bind subscriptions to objects and offers an easy unsubscribe all bound subscription function.
 
-TODO
+```java
+Subscription subscription = RXBusBuilder.create(...).buildSubscription();
+RXSubscriptionManager.addSubscription(activity, subscription);
+```
+
+Now you only have to make sure to unsubscribe again like following:
+```java
+RXSubscriptionManager.unsubscribe(activity);
+```
+
+This will remove ANY subscription that is bound to `activity` and therefore this can be used in your `activity's` `onDestroy` method to make sure ALL subscriptions are unsubscribed at once and that you don't leak the activity.
+
 
 ### Credits
 
