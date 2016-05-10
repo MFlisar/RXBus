@@ -149,7 +149,7 @@ RXBusBuilder.create(String.class, Integer.class, observableProcessor)
 
 #####Helper class - `RXSubscriptionManager`
 
-This class helps to bind subscriptions to objects and offers an easy unsubscribe all bound subscription function.
+This class helps to bind `subscriptions` to objects and offers an easy way to unsubscribe all `subscriptions` that are bound to an object at once.
 
 ```java
 Subscription subscription = RXBusBuilder.create(...).buildSubscription();
