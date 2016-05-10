@@ -33,7 +33,7 @@ dependencies {
 - [Advanced usage - QUEUING](#advanced-usage---queuing)
 - [Advanced usage - KEYS](#advanced-usage---keys)
 - [Advanced usage - bus observable processor](#advanced-usage---bus-observable-processor)
-- [Helper class - `RXSubscriptionManager`](#helper-class---RXSubscriptionManager)
+- [Helper class - `RXSubscriptionManager`](#helper-class---rxsubscriptionmanager)
 
 ####Demo
 
