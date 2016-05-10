@@ -105,9 +105,41 @@ Subscription queuedSubscription = RXBusBuilder.create(String.class)
 
 **Advanced usage - bus observable processor**
 
-TODO
+Use this if you want to process the observed event before you emit it.
+
+```java
+// for example, instead of observing a string, you observe the hash of the string
+IRXBusObservableProcessor observableProcessor = new IRXBusObservableProcessor<String, Integer>()
+{
+    @Override
+    public Observable<Integer> onObservableReady(Observable<String> observable)
+    {
+        // do anything with the observable and return on of the processed type in the end
+        return observable.map(new Func1<String, Integer>()
+        {
+            @Override
+            public Integer call(String s)
+            {
+                    return s.hashCode();
+            }
+        });
+    }
+};
+RXBusBuilder.create(String.class, Integer.class, observableProcessor)
+    .withOnNext(new Action1<Integer>()
+    {
+        @Override
+        public void call(Integer integer)
+        {
+            // here you get the hash instead of the string
+        }
+    })
+    .buildSubscription();
+```
 
 **Helper class - `RXSubscriptionManager`**
+
+This class helps to bind subscriptions to objects and offers an easy unsubscribe all bound subscription function.
 
 TODO
 
