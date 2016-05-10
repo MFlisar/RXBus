@@ -25,7 +25,7 @@ dependencies {
 ```
 ### Usage
 
-**Content**
+*Content*
 
 - [Demo](#demo)
 - [Simple usage](#simple-usage)
