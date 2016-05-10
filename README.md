@@ -28,12 +28,12 @@ dependencies {
 **Content**
 
 - [Demo](#demo)
-- [Simple usage](simple)
-- [Sending an event](sending-an-event)
-- [Advanced usage - QUEUING](advanced-usage---queueing)
-- [Advanced usage - KEYS](advanced-usage---keys)
-- [Advanced usage - bus observable processor](advanced-usage---bus-observable-processor)
-- [Helper class - `RXSubscriptionManager`](helper-class---`RXSubscriptionManager`)
+- [Simple usage](#simple)
+- [Sending an event](#sending-an-event)
+- [Advanced usage - QUEUING](#advanced-usage---queueing)
+- [Advanced usage - KEYS](#advanced-usage---keys)
+- [Advanced usage - bus observable processor](#advanced-usage---bus-observable-processor)
+- [Helper class - `RXSubscriptionManager`](#helper-class---`RXSubscriptionManager`)
 
 ####Demo
 
