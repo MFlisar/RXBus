@@ -179,6 +179,13 @@ public class RXBus
     }
 
     // ---------------------------
+    // public bus functions - subscribe
+    // ---------------------------
+
+
+
+
+    // ---------------------------
     // private helper functions
     // ---------------------------
 

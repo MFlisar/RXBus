@@ -24,7 +24,7 @@ public class RXSubscriptionManager
         return INSTANCE;
     }
 
-    private static HashMap<Class<?>, HashSet<Subscription>> mSubscriptions = new HashMap<>();
+    private static HashMap<Object, HashSet<Subscription>> mSubscriptions = new HashMap<>();
 
     // ---------------------------
     // public bus functions
@@ -32,12 +32,12 @@ public class RXSubscriptionManager
 
     public static void addSubscription(Object boundObject, Subscription subscription)
     {
-        HashSet<Subscription> subscriptions = mSubscriptions.get(boundObject.getClass());
+        HashSet<Subscription> subscriptions = mSubscriptions.get(boundObject);
         if (subscriptions == null)
         {
             subscriptions = new HashSet<>();
             subscriptions.add(subscription);
-            mSubscriptions.put(boundObject.getClass(), subscriptions);
+            mSubscriptions.put(boundObject, subscriptions);
         }
         else
             subscriptions.add(subscription);
@@ -45,13 +45,13 @@ public class RXSubscriptionManager
 
     public static void unsubscribe(Object boundObject)
     {
-        HashSet<Subscription> subscriptions = mSubscriptions.get(boundObject.getClass());
+        HashSet<Subscription> subscriptions = mSubscriptions.get(boundObject);
         if (subscriptions != null)
         {
             Iterator<Subscription> iterator = subscriptions.iterator();
             while (iterator.hasNext())
                 iterator.next().unsubscribe();
-            mSubscriptions.remove(boundObject.getClass());
+            mSubscriptions.remove(boundObject);
         }
     }
 }

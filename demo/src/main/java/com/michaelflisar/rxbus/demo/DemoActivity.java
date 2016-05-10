@@ -50,7 +50,7 @@ public class DemoActivity extends PauseAwareActivity
 //                    .buildObservable();
 
         // Variant 3: use the RXBuilder and create a subscription
-        Subscription simpleSubscription = new RXBusBuilder(String.class)
+        Subscription simpleSubscription = new RXBusBuilder<String, String>(String.class)
                 // OPTIONAL: define on which thread you want the bus to emit items
 //                    .withBusMode(RXBusMode.Background || RXBusMode.Main || RXBusMode.None)
                 // REQUIRED: add an observer, add actions (next, error, complete) or add an subscriber, but only on of those 3!
@@ -68,7 +68,7 @@ public class DemoActivity extends PauseAwareActivity
         // -----------------
 
         // Explanation this will retrieve all String events, if they are not exclusively bound to a key as well
-        Subscription queuedSubscription = new RXBusBuilder<>(String.class)
+        Subscription queuedSubscription = new RXBusBuilder<String, String>(String.class)
                 // this enables the queuing mode!
                 .queue(observableIsResumed, this)
                 .withOnNext(new Action1<String>() {
@@ -87,7 +87,7 @@ public class DemoActivity extends PauseAwareActivity
         // -----------------
 
         // Explanation: this will retrieve all String events that are bound to the key passed to the builder
-        Subscription queuedSubscriptionKey1 = new RXBusBuilder<>(String.class)
+        Subscription queuedSubscriptionKey1 = new RXBusBuilder<String, String>(String.class)
                 // this enables the key bound mode
                 .withKey(R.id.custom_event_id_1)
                 .queue(observableIsResumed, this)
@@ -102,7 +102,7 @@ public class DemoActivity extends PauseAwareActivity
         mSubscriptions.add(queuedSubscriptionKey1);
 
         // Explanation: this will retrieve all String events that are bound to the key passed to the builder
-        Subscription queuedSubscriptionKey2 = new RXBusBuilder<>(String.class)
+        Subscription queuedSubscriptionKey2 = new RXBusBuilder<String, String>(String.class)
                 .withKey(R.id.custom_event_id_2)
                 .queue(observableIsResumed, this)
                 .withOnNext(new Action1<String>() {
