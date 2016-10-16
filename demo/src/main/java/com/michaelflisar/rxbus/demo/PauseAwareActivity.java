@@ -1,39 +1,36 @@
 package com.michaelflisar.rxbus.demo;
 
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
-import com.michaelflisar.rxbus.interfaces.IRXBusIsResumedProvider;
-import com.michaelflisar.rxbus.interfaces.IRXBusResumedListener;
+import com.michaelflisar.rxbus.interfaces.IRXBusQueue;
 
-import java.util.HashSet;
-import java.util.Iterator;
+import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 /**
  * Created by flisar on 28.04.2016.
  */
-public class PauseAwareActivity extends AppCompatActivity implements IRXBusIsResumedProvider
+public class PauseAwareActivity extends AppCompatActivity implements IRXBusQueue
 {
-    private boolean mPaused = true;
-    private HashSet<IRXBusResumedListener> mListeners = new HashSet<>();
+    private static final String TAG = PauseAwareActivity.class.getSimpleName();
+
+    private final BehaviorSubject<Boolean> mResumedObject = BehaviorSubject.create(false);
 
     @Override
     protected void onResume()
     {
         super.onResume();
-        mPaused = false;
-        Iterator<IRXBusResumedListener> iterator = mListeners.iterator();
-        while (iterator.hasNext())
-            iterator.next().onResumedChanged(true);
+        mResumedObject.onNext(true);
+        Log.d(TAG, "onResume");
     }
 
     @Override
     protected void onPause()
     {
+        mResumedObject.onNext(false);
+        Log.d(TAG, "onPause");
         super.onPause();
-        mPaused = true;
-        Iterator<IRXBusResumedListener> iterator = mListeners.iterator();
-        while (iterator.hasNext())
-            iterator.next().onResumedChanged(false);
     }
 
     // --------------
@@ -41,20 +38,14 @@ public class PauseAwareActivity extends AppCompatActivity implements IRXBusIsRes
     // --------------
 
     @Override
-    public boolean isRXBusResumed()
+    public boolean isBusResumed()
     {
-        return !mPaused;
+        return mResumedObject.getValue();
     }
 
     @Override
-    public void addResumedListener(IRXBusResumedListener listener, boolean callListener) {
-        mListeners.add(listener);
-        if (callListener)
-            listener.onResumedChanged(isRXBusResumed());
-    }
-
-    @Override
-    public void removeResumedListener(IRXBusResumedListener listener) {
-        mListeners.remove(listener);
+    public Observable<Boolean> getResumeObservable()
+    {
+        return mResumedObject;
     }
 }

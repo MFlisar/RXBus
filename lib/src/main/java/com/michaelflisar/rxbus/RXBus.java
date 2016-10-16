@@ -11,7 +11,7 @@ import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 
 /**
- * Created by Prometheus on 22.04.2016.
+ * Created by Michael on 22.04.2016.
  */
 public class RXBus
 {
@@ -204,7 +204,7 @@ public class RXBus
         // 1) look if key already has a publisher subject, if so, return it
         if (mSubjectsKeys.containsKey(key))
             return mSubjectsKeys.get(key);
-            // 2) else, create a new one and put it into the map
+        // 2) else, create a new one and put it into the map
         else if (createIfMissing)
         {
             SerializedSubject subject = new SerializedSubject(PublishSubject.create());

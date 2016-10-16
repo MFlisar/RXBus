@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by flisar on 28.04.2016.
@@ -24,18 +25,18 @@ public class RXSubscriptionManager
         return INSTANCE;
     }
 
-    private static HashMap<Class<?>, HashSet<Subscription>> mSubscriptions = new HashMap<>();
+    private static HashMap<Class<?>, CompositeSubscription> mSubscriptions = new HashMap<>();
 
     // ---------------------------
     // public bus functions
     // ---------------------------
 
-    public static void addSubscription(Object boundObject, Subscription subscription)
+    public void addSubscription(Object boundObject, Subscription subscription)
     {
-        HashSet<Subscription> subscriptions = mSubscriptions.get(boundObject.getClass());
+        CompositeSubscription subscriptions = mSubscriptions.get(boundObject.getClass());
         if (subscriptions == null)
         {
-            subscriptions = new HashSet<>();
+            subscriptions = new CompositeSubscription();
             subscriptions.add(subscription);
             mSubscriptions.put(boundObject.getClass(), subscriptions);
         }
@@ -43,14 +44,12 @@ public class RXSubscriptionManager
             subscriptions.add(subscription);
     }
 
-    public static void unsubscribe(Object boundObject)
+    public void unsubscribe(Object boundObject)
     {
-        HashSet<Subscription> subscriptions = mSubscriptions.get(boundObject.getClass());
+        CompositeSubscription subscriptions = mSubscriptions.get(boundObject.getClass());
         if (subscriptions != null)
         {
-            Iterator<Subscription> iterator = subscriptions.iterator();
-            while (iterator.hasNext())
-                iterator.next().unsubscribe();
+            subscriptions.clear();
             mSubscriptions.remove(boundObject.getClass());
         }
     }

@@ -1,6 +1,6 @@
 package com.michaelflisar.rxbus;
 
-import com.michaelflisar.rxbus.interfaces.IRXBusIsResumedProvider;
+import com.michaelflisar.rxbus.interfaces.IRXBusQueue;
 import com.michaelflisar.rxbus.interfaces.IRXBusObservableProcessor;
 import com.michaelflisar.rxbus.rx.RXBusMode;
 import com.michaelflisar.rxbus.rx.RXBusUtil;
@@ -19,7 +19,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
- * Created by Prometheus on 01.05.2016.
+ * Created by Michael on 01.05.2016.
  */
 public class RXBusBuilder<T, O>
 {
@@ -28,8 +28,7 @@ public class RXBusBuilder<T, O>
 
     private boolean mQueueEvents;
     private RXBusMode mBusMode;
-    private Observable<Boolean> mObservableIsResumed;
-    private IRXBusIsResumedProvider mIsResumedProvider;
+    private IRXBusQueue mQueuer;
     private int mValvePrefetch = 1000;
     private boolean mQueueSubscriptionSafetyCheckEnabled = true;
     private boolean mBackpressureObservableEnabled = true;
@@ -84,8 +83,7 @@ public class RXBusBuilder<T, O>
     {
         mQueueEvents = false;
         mBusMode = RXBusMode.Background;
-        mObservableIsResumed = null;
-        mIsResumedProvider = null;
+        mQueuer = null;
 
         mActionNext = null;
         mActionError = null;
@@ -139,11 +137,10 @@ public class RXBusBuilder<T, O>
         return this;
     }
 
-    public RXBusBuilder<T, O> queue(Observable<Boolean> isResumedObservable, IRXBusIsResumedProvider isResumedProvider)
+    public RXBusBuilder<T, O> queue(IRXBusQueue queuer)
     {
         mQueueEvents = true;
-        mObservableIsResumed = isResumedObservable;
-        mIsResumedProvider = isResumedProvider;
+        mQueuer = queuer;
         return this;
     }
 
@@ -225,7 +222,7 @@ public class RXBusBuilder<T, O>
             observable = observable.onBackpressureBuffer();
 
         if (mQueueEvents)
-            observable = observable.lift(new RxValve<T>(mObservableIsResumed, mValvePrefetch, mIsResumedProvider.isRXBusResumed()));
+            observable = observable.lift(new RxValve<T>(mQueuer.getResumeObservable(), mValvePrefetch, mQueuer.isBusResumed()));
 
         Observable<O> processedObservable = null;
         if (mObservableProcessor == null)
@@ -248,7 +245,7 @@ public class RXBusBuilder<T, O>
         {
             Action1<? super O> actionNext = mActionNext;
             if (mQueueEvents && mQueueSubscriptionSafetyCheckEnabled)
-                actionNext = RXBusUtil.wrapQueueAction(mActionNext, mIsResumedProvider);
+                actionNext = RXBusUtil.wrapQueueAction(mActionNext, mQueuer);
 
             if (mActionError != null && mActionOnComplete != null)
                 return observable.subscribe(actionNext, mActionError, mActionOnComplete);
@@ -260,14 +257,14 @@ public class RXBusBuilder<T, O>
         {
             Observer<? super O> subscriptionObserver = mSubscriptionObserver;
             if (mQueueEvents && mQueueSubscriptionSafetyCheckEnabled)
-                subscriptionObserver = RXBusUtil.wrapObserver(mSubscriptionObserver, mIsResumedProvider);
+                subscriptionObserver = RXBusUtil.wrapObserver(mSubscriptionObserver, mQueuer);
             return observable.subscribe(subscriptionObserver);
         }
         else if (mSubscriptionObserver == null)
         {
             Subscriber<? super O> subscriber = mSubscriber;
             if (mQueueEvents && mQueueSubscriptionSafetyCheckEnabled)
-                subscriber = RXBusUtil.wrapSubscriber(mSubscriber, mIsResumedProvider);
+                subscriber = RXBusUtil.wrapSubscriber(mSubscriber, mQueuer);
             return observable.subscribe(subscriber);
         }
         else

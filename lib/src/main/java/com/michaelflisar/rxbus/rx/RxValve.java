@@ -9,6 +9,7 @@ import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.*;
 import rx.internal.util.*;
 import rx.internal.util.atomic.SpscAtomicArrayQueue;
+import rx.plugins.RxJavaHooks;
 
 public final class RxValve<T> implements Operator<T, T> {
 
@@ -53,8 +54,6 @@ public final class RxValve<T> implements Operator<T, T> {
 
         final Queue<Object> queue;
 
-        final NotificationLite<T> nl;
-
         volatile boolean valveOpen;
 
         volatile boolean done;
@@ -70,14 +69,13 @@ public final class RxValve<T> implements Operator<T, T> {
             this.wip = new AtomicInteger();
             this.error = new AtomicReference<>();
             this.queue = new SpscAtomicArrayQueue<>(prefetch);
-            this.nl = NotificationLite.instance();
             this.valveOpen = defaultState;
             request(prefetch);
         }
 
         @Override
         public void onNext(T t) {
-            if (!queue.offer(nl.next(t))) {
+            if (!queue.offer(NotificationLite.next(t))) {
                 onError(new MissingBackpressureException());
             } else {
                 drain();
@@ -91,7 +89,7 @@ public final class RxValve<T> implements Operator<T, T> {
                 done = true;
                 drain();
             } else {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
             }
         }
 
@@ -114,7 +112,7 @@ public final class RxValve<T> implements Operator<T, T> {
                 done = true;
                 drain();
             } else {
-                RxJavaPluginUtils.handleException(e);
+                RxJavaHooks.onError(e);
             }
         }
 
@@ -177,7 +175,7 @@ public final class RxValve<T> implements Operator<T, T> {
                             break;
                         }
 
-                        actual.onNext(nl.getValue(o));
+                        actual.onNext(NotificationLite.getValue(o));
 
                         e++;
                         if (e == limit) {

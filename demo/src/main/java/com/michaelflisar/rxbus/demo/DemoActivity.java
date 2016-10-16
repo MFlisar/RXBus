@@ -5,13 +5,10 @@ import android.util.Log;
 
 import com.michaelflisar.rxbus.RXBus;
 import com.michaelflisar.rxbus.RXBusBuilder;
-import com.michaelflisar.rxbus.interfaces.IRXBusResumedListener;
-import com.michaelflisar.rxbus.rx.RXUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -25,18 +22,11 @@ public class DemoActivity extends PauseAwareActivity
     // for demo purposes we use a static list and only add items to it when activity is created
     private static List<Subscription> mSubscriptions = new ArrayList<>();
 
+    @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Observable<Boolean> observableIsResumed = RXUtil.createResumeStateObservable(this, new IRXBusResumedListener()
-        {
-            @Override
-            public void onResumedChanged(boolean resumed) {
-                Log.d(TAG, "onResumedChanged - resumed=" + resumed);
-            }
-        });
 
         // -----------------
         // Simple bus
@@ -70,7 +60,7 @@ public class DemoActivity extends PauseAwareActivity
         // Explanation this will retrieve all String events, if they are not exclusively bound to a key as well
         Subscription queuedSubscription = RXBusBuilder.create(String.class)
                 // this enables the queuing mode!
-                .queue(observableIsResumed, this)
+                .queue(this)
                 .withOnNext(new Action1<String>() {
                     @Override
                     public void call(String s) {
@@ -90,10 +80,12 @@ public class DemoActivity extends PauseAwareActivity
         Subscription queuedSubscriptionKey1 = RXBusBuilder.create(String.class)
                 // this enables the key bound mode
                 .withKey(R.id.custom_event_id_1)
-                .queue(observableIsResumed, this)
-                .withOnNext(new Action1<String>() {
+                .queue(this)
+                .withOnNext(new Action1<String>()
+                {
                     @Override
-                    public void call(String s) {
+                    public void call(String s)
+                    {
                         // activity IS resumed, you can safely update your UI for example
                         Log.d(TAG, "QUEUED BUS - KEY 1: " + s + " | " + getIsResumedMessage());
                     }
@@ -104,7 +96,7 @@ public class DemoActivity extends PauseAwareActivity
         // Explanation: this will retrieve all String events that are bound to the key passed to the builder
         Subscription queuedSubscriptionKey2 = RXBusBuilder.create(String.class)
                 .withKey(R.id.custom_event_id_2)
-                .queue(observableIsResumed, this)
+                .queue(this)
                 .withOnNext(new Action1<String>() {
                     @Override
                     public void call(String s) {
@@ -182,7 +174,7 @@ public class DemoActivity extends PauseAwareActivity
 
     private String getIsResumedMessage()
     {
-        return "isResumed=" + isRXBusResumed();
+        return "isResumed=" + isBusResumed();
     }
 
 }

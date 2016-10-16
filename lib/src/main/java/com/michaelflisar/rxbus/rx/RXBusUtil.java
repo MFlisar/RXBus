@@ -1,11 +1,9 @@
 package com.michaelflisar.rxbus.rx;
 
-import com.michaelflisar.rxbus.RXBusBuilder;
-import com.michaelflisar.rxbus.interfaces.IRXBusIsResumedProvider;
+import com.michaelflisar.rxbus.interfaces.IRXBusQueue;
 
 import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action1;
 
 /**
@@ -13,7 +11,7 @@ import rx.functions.Action1;
  */
 public class RXBusUtil
 {
-    public static <T> Action1<T> wrapQueueAction(Action1<T> action, IRXBusIsResumedProvider isResumedProvider)
+    public static <T> Action1<T> wrapQueueAction(Action1<T> action, IRXBusQueue isResumedProvider)
     {
         return new Action1<T>()
         {
@@ -26,7 +24,7 @@ public class RXBusUtil
         };
     }
 
-    public static <T> Observer<T> wrapObserver(Observer<T> observer, IRXBusIsResumedProvider isResumedProvider)
+    public static <T> Observer<T> wrapObserver(Observer<T> observer, IRXBusQueue isResumedProvider)
     {
         return new Observer<T>()
         {
@@ -51,7 +49,7 @@ public class RXBusUtil
         };
     }
 
-    public static <T> Subscriber<T> wrapSubscriber(Subscriber<T> subscriber, IRXBusIsResumedProvider isResumedProvider)
+    public static <T> Subscriber<T> wrapSubscriber(Subscriber<T> subscriber, IRXBusQueue isResumedProvider)
     {
         return new Subscriber<T>()
         {
