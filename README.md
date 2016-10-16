@@ -25,7 +25,7 @@ dependencies {
 
 ### Migration
 
-If you update from version <0.5 to 0.6, follow this short migration guide: [MIGRATION GUIDE](https://github.com/mflisar/RXBus/blob/develop/MIGRATION.md)
+If you update from version <0.5 to 0.6, follow this short migration guide: [MIGRATION GUIDE](https://github.com/MFlisar/RXBus/blob/master/MIGRATION.md)
 
 ### Usage
 
