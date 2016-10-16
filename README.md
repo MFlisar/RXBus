@@ -34,6 +34,10 @@ dependencies {
 - [Advanced usage - bus observable processor](#advanced-usage---bus-observable-processor)
 - [Helper class - `RXSubscriptionManager`](#helper-class---rxsubscriptionmanager)
 
+### Migration
+
+If you update from version <0.5 to 0.6, follow this short migration guide: [MIGRATION GUIDE](https://github.com/mflisar/RXBus/blob/develop/MIGRATION_05_06.md)
+
 #####Demo
 
 Just check out the [DemoActivity](https://github.com/MFlisar/RXBus/blob/master/demo/src/main/java/com/michaelflisar/rxbus/demo/DemoActivity.java), it will show the base usage and the difference between the default and the queued `RXBus`
@@ -76,8 +80,8 @@ RXBus.get().sendEvent(new TestEvent(), R.id.observer_key_1, true);
 You can use this library to subscribe to events and only get them when your activity is resumed, so that you can be sure views are available, for example. Just like following:
 ```java
 Subscription queuedSubscription = RXBusBuilder.create(TestEvent.class)
-    // this enables the queuing mode!
-    .queue(observableIsResumed, busIsResumedProvider)
+    // this enables the queuing mode! Passed object must implement IRXBusQueue interface, see the demo app for an example
+    .queue(rxBusQueue)
     .withOnNext(new Action1<TestEvent>() {
         @Override
         public void call(TestEvent s) {
@@ -98,7 +102,7 @@ You can use this library to subscribe to events of a typ and ONLY get them when 
 Subscription queuedSubscription = RXBusBuilder.create(String.class)
     // this enables the binding to the key
     .withKey(R.id.observer_key_1) // you can provide multiple keys as well
-    .queue(observableIsResumed, busIsResumedProvider)
+    .queue(rxBusQueue)
     .withOnNext(new Action1<String>() {
         @Override
         public void call(String s) {
@@ -112,7 +116,7 @@ Subscription queuedSubscription = RXBusBuilder.create(String.class)
     .buildSubscription();
 ```
 
-#####Advanced usage - bus observable processor
+#####Advanced usage - bus observable processor (this does not look very nice and does not follow the rx base rule of never breaking the chain, so it's likely to be removed and replaced by something better!)
 
 Use this if you want to process the observed event before you emit it.
 
