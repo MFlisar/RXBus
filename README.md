@@ -22,6 +22,11 @@ dependencies {
     compile 'com.github.MFlisar:RXBus:0.6'
 }
 ```
+
+### Migration
+
+If you update from version <0.5 to 0.6, follow this short migration guide: [MIGRATION GUIDE](https://github.com/mflisar/RXBus/blob/develop/MIGRATION.md)
+
 ### Usage
 
 *Content*
@@ -33,10 +38,6 @@ dependencies {
 - [Advanced usage - KEYS](#advanced-usage---keys)
 - [Advanced usage - bus observable processor](#advanced-usage---bus-observable-processor)
 - [Helper class - `RXSubscriptionManager`](#helper-class---rxsubscriptionmanager)
-
-### Migration
-
-If you update from version <0.5 to 0.6, follow this short migration guide: [MIGRATION GUIDE](https://github.com/mflisar/RXBus/blob/develop/MIGRATION_05_06.md)
 
 #####Demo
 
