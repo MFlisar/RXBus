@@ -2,4 +2,4 @@
 
 #### v0.6
 * Remove all usages of `IRXBusIsResumedProvider` and `IRXBusResumedListener`
-* for using queuing, the "queuer" now must implement the `IRXBusQueue` interface, see the `PauseAwareActivity` for an example
+* for using queuing, the "queuer" now must implement the `IRXBusQueue` interface, see the `PauseAwareActivity` for an example:  [`PauseAwareActivity`](https://github.com/MFlisar/RXBus/blob/master/demo/src/main/java/com/michaelflisar/rxbus/demo/PauseAwareActivity.java)
