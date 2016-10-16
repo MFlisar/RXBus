@@ -19,7 +19,7 @@ repositories {
 2. add the compile statement to your module's `build.gradle`:
 ```groovy
 dependencies {
-    compile 'com.github.MFlisar:RXBus:0.5'
+    compile 'com.github.MFlisar:RXBus:0.6'
 }
 ```
 ### Usage
