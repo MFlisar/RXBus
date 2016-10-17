@@ -63,7 +63,7 @@ public class RXSubscriptionManager
         CompositeSubscription subscriptions = mSubscriptions.get(boundObject.getClass());
         if (subscriptions != null)
         {
-            subscriptions.clear();
+            subscriptions.unsubscribe();
             mSubscriptions.remove(boundObject.getClass());
         }
     }
