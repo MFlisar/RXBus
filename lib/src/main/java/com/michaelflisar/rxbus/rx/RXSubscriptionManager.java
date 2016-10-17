@@ -28,10 +28,24 @@ public class RXSubscriptionManager
     private static HashMap<Class<?>, CompositeSubscription> mSubscriptions = new HashMap<>();
 
     // ---------------------------
-    // public bus functions
+    // public static bus functions
     // ---------------------------
 
-    public void addSubscription(Object boundObject, Subscription subscription)
+    public static void addSubscription(Object boundObject, Subscription subscription)
+    {
+        get().doAddSubscription(boundObject, subscription);
+    }
+
+    public static void unsubscribe(Object boundObject)
+    {
+        get().doUnsubscribe(boundObject);
+    }
+
+    // ---------------------------
+    // private bus functions
+    // ---------------------------
+
+    private void doAddSubscription(Object boundObject, Subscription subscription)
     {
         CompositeSubscription subscriptions = mSubscriptions.get(boundObject.getClass());
         if (subscriptions == null)
@@ -44,7 +58,7 @@ public class RXSubscriptionManager
             subscriptions.add(subscription);
     }
 
-    public void unsubscribe(Object boundObject)
+    private void doUnsubscribe(Object boundObject)
     {
         CompositeSubscription subscriptions = mSubscriptions.get(boundObject.getClass());
         if (subscriptions != null)
