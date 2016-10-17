@@ -30,13 +30,30 @@ public class PauseAwareActivity extends AppCompatActivity implements IRXBusQueue
                 this,
                 RXBusBuilder.create(String.class)
                         .withBusMode(RXBusMode.Main)
-                        .withKey("TEST")
+                        .withKey("TEST_ISSUE_6_A")
+                        .queue(this)
                         .withOnNext(new Action1<String>()
                         {
                             @Override
                             public void call(String s)
                             {
-                                Log.d(TAG, "Reveived (key \"TEST\"): " + s);
+                                Log.d(TAG, "Reveived (key \"TEST_ISSUE_6_A\"): " + s + " | isResumed=" + isBusResumed());
+                            }
+                        })
+                        .buildSubscription());
+
+        RXSubscriptionManager.addSubscription(
+                this,
+                RXBusBuilder.create(String.class)
+                        .withBusMode(RXBusMode.Main)
+                        .withKey("TEST_ISSUE_6_B")
+                        .queue(this)
+                        .withOnNext(new Action1<String>()
+                        {
+                            @Override
+                            public void call(String s)
+                            {
+                                Log.d(TAG, "Reveived (key \"TEST_ISSUE_6_B\"): " + s + " | isResumed=" + isBusResumed());
                             }
                         })
                         .buildSubscription());

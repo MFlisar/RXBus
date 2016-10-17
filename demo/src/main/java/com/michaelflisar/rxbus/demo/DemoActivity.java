@@ -142,26 +142,34 @@ public class DemoActivity extends PauseAwareActivity
             RXBus.get().sendEvent(getLogMessage("onCreate", "KEY 2 (AND ALL String listeners) main thread i=" + i), R.id.custom_event_id_2, true);
 
         // lets send some events to the subscription made in the base activity
-        for (int i = 0; i < 5; i++)
-            RXBus.get().sendEvent("Test message " + i, "TEST");
+        sendTestIssue6Messages("onCreate");
     }
 
     @Override
     public void onPause()
     {
+        sendTestIssue6Messages("before onPause");
+
         RXBus.get().sendEvent(getLogMessage("onPause", "BEFORE on pause"));
         super.onPause();
         Log.d(TAG, "ACTIVITY PAUSED");
         RXBus.get().sendEvent(getLogMessage("onPause", "AFTER on pause"));
+
+        // lets send some events to the subscription made in the base activity
+        sendTestIssue6Messages("after onPause");
     }
 
     @Override
     public void onResume()
     {
+        sendTestIssue6Messages("before onResume");
+
         RXBus.get().sendEvent(getLogMessage("onResume", "BEFORE on resume"));
         super.onResume();
         Log.d(TAG, "ACTIVITY RESUMED");
         RXBus.get().sendEvent(getLogMessage("onResume", "AFTER on resume"));
+
+        sendTestIssue6Messages("after onResume");
     }
 
     @Override
@@ -171,6 +179,14 @@ public class DemoActivity extends PauseAwareActivity
         // so following will safely unsubscribe every subscription
         RXSubscriptionManager.unsubscribe(this);
         super.onDestroy();
+    }
+
+    private void sendTestIssue6Messages(String tag)
+    {
+        for (int i = 0; i < 5; i++)
+            RXBus.get().sendEvent("Test ISSUE 6 A [" + tag + "] message " + i, "TEST_ISSUE_6_A");
+        for (int i = 0; i < 5; i++)
+            RXBus.get().sendEvent("Test ISSUE 6 B [" + tag + "]message " + i, "TEST_ISSUE_6_B");
     }
 
     // -----------------------------
