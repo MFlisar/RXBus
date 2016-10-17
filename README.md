@@ -19,13 +19,13 @@ repositories {
 2. add the compile statement to your module's `build.gradle`:
 ```groovy
 dependencies {
-    compile 'com.github.MFlisar:RXBus:0.7'
+    compile 'com.github.MFlisar:RXBus:0.8'
 }
 ```
 
 ### Migration
 
-If you update from version <0.5 to 0.6, follow this short migration guide: [MIGRATION GUIDE](https://github.com/MFlisar/RXBus/blob/master/MIGRATION.md)
+If you update from version <0.5, follow this short migration guide: [MIGRATION GUIDE](https://github.com/MFlisar/RXBus/blob/master/MIGRATION.md)
 
 ### Usage
 
