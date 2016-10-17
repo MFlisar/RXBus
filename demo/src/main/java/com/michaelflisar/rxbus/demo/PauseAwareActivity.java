@@ -58,6 +58,13 @@ public class PauseAwareActivity extends AppCompatActivity implements IRXBusQueue
         super.onPause();
     }
 
+    @Override
+    public void onDestroy()
+    {
+        RXSubscriptionManager.unsubscribe(this);
+        super.onDestroy();
+    }
+
     // --------------
     // Interface RXBus
     // --------------
