@@ -18,7 +18,7 @@ public class RXSubscriptionManager
 
     private static RXSubscriptionManager INSTANCE = null;
 
-    public static RXSubscriptionManager get()
+    private static RXSubscriptionManager get()
     {
         if (INSTANCE == null)
             INSTANCE = new RXSubscriptionManager();

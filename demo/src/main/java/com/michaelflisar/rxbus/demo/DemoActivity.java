@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.michaelflisar.rxbus.RXBus;
 import com.michaelflisar.rxbus.RXBusBuilder;
+import com.michaelflisar.rxbus.rx.RXSubscriptionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +18,7 @@ import rx.functions.Action1;
  */
 public class DemoActivity extends PauseAwareActivity
 {
-    private static final String TAG = PauseAwareActivity.class.getSimpleName();
-
-    // for demo purposes we use a static list and only add items to it when activity is created
-    private static List<Subscription> mSubscriptions = new ArrayList<>();
+    private static final String TAG = DemoActivity.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -51,7 +49,9 @@ public class DemoActivity extends PauseAwareActivity
                     }
                 })
                 .buildSubscription();
-        mSubscriptions.add(simpleSubscription);
+        // optional: add subscription to the RXSubscriptionManager for convenience
+        // this "bind" the subscription to the boundObject and offers a onliner function to unsubscribe all added subscriptions again
+        RXSubscriptionManager.addSubscription(this, simpleSubscription);
 
         // -----------------
         // Queued bus
@@ -69,7 +69,9 @@ public class DemoActivity extends PauseAwareActivity
                     }
                 })
                 .buildSubscription();
-        mSubscriptions.add(queuedSubscription);
+        // optional: add subscription to the RXSubscriptionManager for convenience
+        // this "bind" the subscription to the boundObject and offers a onliner function to unsubscribe all added subscriptions again
+        RXSubscriptionManager.addSubscription(this, queuedSubscription);
 
         // -----------------
         // Usage with keys
@@ -91,7 +93,9 @@ public class DemoActivity extends PauseAwareActivity
                     }
                 })
                 .buildSubscription();
-        mSubscriptions.add(queuedSubscriptionKey1);
+        // optional: add subscription to the RXSubscriptionManager for convenience
+        // this "bind" the subscription to the boundObject and offers a onliner function to unsubscribe all added subscriptions again
+        RXSubscriptionManager.addSubscription(this, queuedSubscriptionKey1);
 
         // Explanation: this will retrieve all String events that are bound to the key passed to the builder
         Subscription queuedSubscriptionKey2 = RXBusBuilder.create(String.class)
@@ -105,7 +109,9 @@ public class DemoActivity extends PauseAwareActivity
                     }
                 })
                 .buildSubscription();
-        mSubscriptions.add(queuedSubscriptionKey2);
+        // optional: add subscription to the RXSubscriptionManager for convenience
+        // this "bind" the subscription to the boundObject and offers a onliner function to unsubscribe all added subscriptions again
+        RXSubscriptionManager.addSubscription(this, queuedSubscriptionKey2);
 
         // -----------------
         // Send some events
@@ -157,9 +163,9 @@ public class DemoActivity extends PauseAwareActivity
     @Override
     public void onDestroy()
     {
-        // unsubscribe
-        for (int i = 0; i < mSubscriptions.size(); i++)
-            mSubscriptions.get(i).unsubscribe();
+        // unsubscribe - we used the RXSubscriptionManager for every subscription and bound all subscriptions to this class,
+        // so following will safely unsubscribe every subscription
+        RXSubscriptionManager.unsubscribe(this);
         super.onDestroy();
     }
 
@@ -176,5 +182,4 @@ public class DemoActivity extends PauseAwareActivity
     {
         return "isResumed=" + isBusResumed();
     }
-
 }

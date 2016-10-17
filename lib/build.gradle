@@ -5,8 +5,25 @@ apply plugin: 'me.tatarka.retrolambda'
 group = 'com.github.MFlisar'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+
+    if (project.hasProperty('setup.compileSdk'))
+    {
+        compileSdkVersion setup.compileSdk
+        buildToolsVersion setup.buildTools
+        defaultConfig {
+            minSdkVersion setup.minSdk
+            targetSdkVersion setup.targetSdk
+        }
+    }
+    else
+    {
+        compileSdkVersion 24
+        buildToolsVersion "24.0.2"
+        defaultConfig {
+            minSdkVersion 16
+            targetSdkVersion 24
+        }
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -15,13 +32,6 @@ android {
 
     retrolambda {
         jvmArgs '-noverify'
-    }
-
-    defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
     }
 
     buildTypes {
