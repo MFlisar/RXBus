@@ -140,6 +140,10 @@ public class DemoActivity extends PauseAwareActivity
             RXBus.get().sendEvent(getLogMessage("onCreate", "KEY 1 main thread i=" + i), R.id.custom_event_id_1);
         for (int i = 0; i < 5; i++)
             RXBus.get().sendEvent(getLogMessage("onCreate", "KEY 2 (AND ALL String listeners) main thread i=" + i), R.id.custom_event_id_2, true);
+
+        // lets send some events to the subscription made in the base activity
+        for (int i = 0; i < 5; i++)
+            RXBus.get().sendEvent("Test message " + i, "TEST");
     }
 
     @Override
