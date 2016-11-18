@@ -5,6 +5,5 @@ package com.michaelflisar.rxbus.rx;
  */
 public enum RXBusMode {
     Main,
-    Background,
-    None
+    Background;
 }

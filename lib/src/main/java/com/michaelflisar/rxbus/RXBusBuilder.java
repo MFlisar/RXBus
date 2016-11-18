@@ -21,6 +21,11 @@ import rx.functions.Action1;
 /**
  * Created by Michael on 01.05.2016.
  */
+
+/*
+* Use the new RXBus.Builder class!
+ */
+@Deprecated
 public class RXBusBuilder<T, O>
 {
     private List<RXQueueKey<T>> mKey = null;
