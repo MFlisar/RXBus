@@ -313,7 +313,7 @@ public class DemoActivity extends PauseAwareActivity
                 .subscribe(new Action1<Integer>() {
                     @Override
                     public void call(Integer s) {
-                        Log.d(TAG_NEW, "KEY BUS (QUEUED and BOUND): " + s + " | " + getIsResumedMessage());
+                        Log.d(TAG_NEW, "KEY BUS (QUEUED and BOUND) - Transformed String to hash:" + s + " | " + getIsResumedMessage());
                     }
                 }, new Observable.Transformer<String, Integer>() {
                     @Override
