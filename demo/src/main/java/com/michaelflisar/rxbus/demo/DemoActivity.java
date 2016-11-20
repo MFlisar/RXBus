@@ -102,7 +102,7 @@ public class DemoActivity extends PauseAwareActivity
 
     private void logEvent(String event, boolean queuedBus, String key, String extra)
     {
-        Log.d(TAG, String.format("Type: %s%s (key=%s, isResumed=%b), Event: %s", queuedBus ? "QUEUED BUS" : "SIMPLE BUS", extra != null ? extra : "", key == null ? "NONE" : key, isBusResumed(), event));
+        Log.d(TAG, String.format("Type: %s%s (key=%s), Event: %s", queuedBus ? "QUEUED BUS" : "SIMPLE BUS", extra != null ? extra : "", key == null ? "NONE" : key, event));
     }
 
     // -----------------------------
@@ -125,7 +125,7 @@ public class DemoActivity extends PauseAwareActivity
         // 2) Subscribe to an event and let RXSubscriptionManager manage your subscription - you just need to call
         // RXSubscriptionManager.unsubscribe(boundObject); to unsubscribe ALL subscriptions for a bound object
         // additionally this here enable queuing + emits items on the main thread
-        Subscription subscriptionManaged = RXBusBuilder.create(String.class)
+        RXBusBuilder.create(String.class)
                 .withQueuing(this)          // optional: if enabled, events will be queued while the IRXBusQueue is paused!
                 .withBound(this)            // optional: this binds the subcritpion to this object and you can unsubscribe all bound subscriptions at once
                 .withMode(RXBusMode.Main)   // optional: set the thread to main or background if wanted, events will be emitted on the corresponding thread

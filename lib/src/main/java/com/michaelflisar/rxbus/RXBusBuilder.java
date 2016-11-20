@@ -131,7 +131,7 @@ public class RXBusBuilder<T>
         return build(true);
     }
 
-    private Observable<T> build(boolean applySchedular)
+    public Observable<T> build(boolean applySchedular)
     {
         Observable<T> observable = null;
         if (mKeys != null)
@@ -152,10 +152,8 @@ public class RXBusBuilder<T>
 
         if (mQueuer != null)
             observable = observable.lift(new RxValve<T>(mQueuer.getResumeObservable(), mValvePrefetch, mQueuer.isBusResumed()));
-
         if (applySchedular)
             observable = applySchedular(observable);
-
         return observable;
     }
 
@@ -209,6 +207,7 @@ public class RXBusBuilder<T>
         if (mQueuer != null && mQueueSubscriptionSafetyCheckEnabled)
             actualOnNext = RXBusUtil.wrapQueueAction(onNext, mQueuer);
 
+        observable = applySchedular(observable);
         Subscription subscription = observable.subscribe(actualOnNext, onError, onCompleted);
         if (mBoundObject != null)
             RXSubscriptionManager.addSubscription(mBoundObject, subscription);
@@ -225,6 +224,7 @@ public class RXBusBuilder<T>
         if (mQueuer != null && mQueueSubscriptionSafetyCheckEnabled)
             actualObserver = RXBusUtil.wrapObserver(observer, mQueuer);
 
+        observable = applySchedular(observable);
         Subscription subscription = observable.subscribe(actualObserver);
         if (mBoundObject != null)
             RXSubscriptionManager.addSubscription(mBoundObject, subscription);
@@ -241,6 +241,7 @@ public class RXBusBuilder<T>
         if (mQueuer != null && mQueueSubscriptionSafetyCheckEnabled)
             actualSubscriber = RXBusUtil.wrapSubscriber(subscriber, mQueuer);
 
+        observable = applySchedular(observable);
         Subscription subscription = observable.subscribe(actualSubscriber);
         if (mBoundObject != null)
             RXSubscriptionManager.addSubscription(mBoundObject, subscription);
