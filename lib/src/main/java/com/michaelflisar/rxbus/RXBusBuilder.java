@@ -1,10 +1,9 @@
 package com.michaelflisar.rxbus;
 
 import com.michaelflisar.rxbus.interfaces.IRXBusQueue;
-import com.michaelflisar.rxbus.interfaces.IRXBusObservableProcessor;
 import com.michaelflisar.rxbus.rx.RXBusMode;
-import com.michaelflisar.rxbus.rx.RXBusUtil;
 import com.michaelflisar.rxbus.rx.RXQueueKey;
+import com.michaelflisar.rxbus.rx.RXSubscriptionManager;
 import com.michaelflisar.rxbus.rx.RXUtil;
 import com.michaelflisar.rxbus.rx.RxValve;
 
@@ -17,263 +16,235 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Actions;
+import rx.internal.util.InternalObservableUtils;
 
 /**
  * Created by Michael on 01.05.2016.
  */
 
-/*
-* Use the new RXBus.Builder class!
- */
-@Deprecated
-public class RXBusBuilder<T, O>
+public class RXBusBuilder<T>
 {
-    private List<RXQueueKey<T>> mKey = null;
-    private Class<T> mKeyClass;
+    private Class<T> mEventClass;
+    private List<RXQueueKey<T>> mKeys = null;
 
-    private boolean mQueueEvents;
-    private RXBusMode mBusMode;
-    private IRXBusQueue mQueuer;
+    private RXBusMode mBusMode = null;
+
+    private IRXBusQueue mQueuer = null;
     private int mValvePrefetch = 1000;
+    private boolean mBackpressureBeforeValve = true;
     private boolean mQueueSubscriptionSafetyCheckEnabled = true;
-    private boolean mBackpressureObservableEnabled = true;
 
-    private Action1<? super O> mActionNext;
-    private Action1<Throwable> mActionError;
-    private Action0 mActionOnComplete;
-    private Observer<? super O> mSubscriptionObserver;
-    private Subscriber<? super O> mSubscriber;
+    private Object mBoundObject = null;
 
-    private IRXBusObservableProcessor<T, O> mObservableProcessor = null;
-
-    // -----------------------------
-    // public create functions
-    // -----------------------------
-
-    public static <T> RXBusBuilder<T, T> create(Class<T> eventClass) {
-        return new RXBusBuilder<T, T>(eventClass);
-    }
-
-    public static <T, O> RXBusBuilder<T, O> create(Class<T> eventClass, Class<O> observableClass, IRXBusObservableProcessor<T, O> observableProcessor) {
-        return new RXBusBuilder<T, O>(eventClass, observableClass, observableProcessor);
-    }
-
-    // -----------------------------
-    // private constructors
-    // -----------------------------
-
-
-    private RXBusBuilder(Class<T> eventClass)
+    public static <T> RXBusBuilder<T> create(Class<T> eventClass)
     {
-        this(eventClass, (Class<O>)eventClass);
+        return new RXBusBuilder<T>(eventClass);
     }
 
-    private RXBusBuilder(Class<T> eventClass, Class<O> observableClass)
+    public RXBusBuilder(Class<T> eventClass)
     {
-        this(eventClass, (Class<O>)eventClass, null);
+        mEventClass = eventClass;
     }
 
-    private RXBusBuilder(Class<T> eventClass, Class<O> observableClass, IRXBusObservableProcessor<T, O> observableProcessor)
-    {
-        mKeyClass = eventClass;
-        mObservableProcessor = observableProcessor;
-        init();
-    }
-
-    // -----------------------------
-    // init and builder functions
-    // -----------------------------
-
-    private void init()
-    {
-        mQueueEvents = false;
-        mBusMode = RXBusMode.Background;
-        mQueuer = null;
-
-        mActionNext = null;
-        mActionError = null;
-        mActionOnComplete = null;
-        mSubscriptionObserver = null;
-        mSubscriber = null;
-    }
-
-    public RXBusBuilder<T, O> withKey(RXQueueKey<T>... key)
-    {
-        if (key.length > 0)
-        {
-            mKey = new ArrayList<>();
-            for (int i = 0; i < key.length; i++)
-                mKey.add(key[i]);
-        }
-        else
-            mKey = null;
-        return this;
-    }
-
-    public RXBusBuilder<T, O> withKey(int... key)
-    {
-        if (key.length > 0)
-        {
-            mKey = new ArrayList<>();
-            for (int i = 0; i < key.length; i++)
-                mKey.add( new RXQueueKey(mKeyClass, key[i]));
-        }
-        else
-            mKey = null;
-        return this;
-    }
-
-    public RXBusBuilder<T, O> withKey(String... key)
-    {
-        if (key.length > 0)
-        {
-            mKey = new ArrayList<>();
-            for (int i = 0; i < key.length; i++)
-                mKey.add( new RXQueueKey(mKeyClass, key[i]));
-        }
-        else
-            mKey = null;
-        return this;
-    }
-
-    public RXBusBuilder<T, O> withBusMode(RXBusMode mode)
+    public RXBusBuilder<T> withMode(RXBusMode mode)
     {
         mBusMode = mode;
         return this;
     }
 
-    public RXBusBuilder<T, O> queue(IRXBusQueue queuer)
+    public RXBusBuilder<T> withQueuing(IRXBusQueue queuer)
     {
-        mQueueEvents = true;
         mQueuer = queuer;
         return this;
     }
 
-    public RXBusBuilder<T, O> withQueueSubscriptionSafetyCheckEnabled(boolean enabled)
+    public RXBusBuilder<T> withQueuing(IRXBusQueue queuer, int valvePrefetch)
+    {
+        mQueuer = queuer;
+        mValvePrefetch = valvePrefetch;
+        return this;
+    }
+
+    public RXBusBuilder<T> withBackpressure(boolean enabled)
+    {
+        mBackpressureBeforeValve = enabled;
+        return this;
+    }
+
+    public RXBusBuilder<T> withSafetyCheck(boolean enabled)
     {
         mQueueSubscriptionSafetyCheckEnabled = enabled;
         return this;
     }
 
-    public RXBusBuilder<T, O> withBackpressureObservableEnabled(boolean enabled)
+    public RXBusBuilder<T> withKeys(RXQueueKey<T>... key)
     {
-        mBackpressureObservableEnabled = enabled;
+        if (key.length > 0)
+        {
+            mKeys = new ArrayList<>();
+            for (int i = 0; i < key.length; i++)
+                mKeys.add(key[i]);
+        }
+        else
+            mKeys = null;
+        return this;
+    }
+    public RXBusBuilder<T> withKey(int... key)
+    {
+        if (key.length > 0)
+        {
+            mKeys = new ArrayList<>();
+            for (int i = 0; i < key.length; i++)
+                mKeys.add( new RXQueueKey(mEventClass, key[i]));
+        }
+        else
+            mKeys = null;
         return this;
     }
 
-    public RXBusBuilder<T, O> withValvePrefetch(int prefetch)
+    public RXBusBuilder<T> withKey(String... key)
     {
-        mValvePrefetch = prefetch;
+        if (key.length > 0)
+        {
+            mKeys = new ArrayList<>();
+            for (int i = 0; i < key.length; i++)
+                mKeys.add( new RXQueueKey(mEventClass, key[i]));
+        }
+        else
+            mKeys = null;
         return this;
     }
 
-    public RXBusBuilder<T, O> withOnNext(Action1<O> actionNext)
+    public RXBusBuilder<T> withBound(Object boundObject)
     {
-        mActionNext = actionNext;
+        mBoundObject = boundObject;
         return this;
     }
 
-    public RXBusBuilder<T, O> withOnError(Action1<Throwable> actionerror)
+    // ---------------------------
+    // observable - build
+    // ---------------------------
+
+    public Observable<T> build()
     {
-        mActionError = actionerror;
-        return this;
+        return build(true);
     }
 
-    public RXBusBuilder<T, O> withOnComplete(Action0 actionComplete)
-    {
-        mActionOnComplete= actionComplete;
-        return this;
-    }
-
-    public RXBusBuilder<T, O> withObserver(Observer<O> subscriptionObserver)
-    {
-        mSubscriptionObserver = subscriptionObserver;
-        return this;
-    }
-
-    public RXBusBuilder<T, O> withSubscriber(Subscriber<? super O> subscriber)
-    {
-        mSubscriber = subscriber;
-        return this;
-    }
-
-    public RXBusBuilder<T, O> withObservableReadyListener(IRXBusObservableProcessor observableReadyListener)
-    {
-        mObservableProcessor = observableReadyListener;
-        return this;
-    }
-
-    // -----------------------------
-    // build functions
-    // -----------------------------
-
-    public Observable<O> buildObservable()
+    private Observable<T> build(boolean applySchedular)
     {
         Observable<T> observable = null;
-        if (mKey != null)
+        if (mKeys != null)
         {
-            for (int i = 0; i < mKey.size(); i++)
+            for (int i = 0; i < mKeys.size(); i++)
             {
                 if (i == 0)
-                    observable = RXBus.get().observeEvent(mKey.get(i));
+                    observable = RXBus.get().observeEvent(mKeys.get(i));
                 else
-                    observable = observable.mergeWith(RXBus.get().observeEvent(mKey.get(i)));
+                    observable = observable.mergeWith(RXBus.get().observeEvent(mKeys.get(i)));
             }
         }
         else
-            observable = RXBus.get().observeEvent(mKeyClass);
+            observable = RXBus.get().observeEvent(mEventClass);
 
-        if (mBackpressureObservableEnabled)
+        if (mBackpressureBeforeValve)
             observable = observable.onBackpressureBuffer();
 
-        if (mQueueEvents)
+        if (mQueuer != null)
             observable = observable.lift(new RxValve<T>(mQueuer.getResumeObservable(), mValvePrefetch, mQueuer.isBusResumed()));
 
-        Observable<O> processedObservable = null;
-        if (mObservableProcessor == null)
-            processedObservable = (Observable<O>) observable;
-        else
-            processedObservable = mObservableProcessor.onObservableReady(observable);
+        if (applySchedular)
+            observable = applySchedular(observable);
 
-        processedObservable = applySchedular(processedObservable);
-        return processedObservable;
+        return observable;
     }
 
-    public Subscription buildSubscription()
+    // ---------------------------
+    // subscribe - variants
+    // ---------------------------
+
+    public Subscription subscribe(Action1<T> onNext)
     {
-        Observable<O> observable = buildObservable();
+        return subscribe(onNext, null, null, null);
+    }
 
-        if (mSubscriber == null && mSubscriptionObserver == null && mActionNext == null)
-            throw new RuntimeException("Subscription can't be build, because no next action, subscriber nor observable was set!");
+    public <R> Subscription subscribe(Action1<R> onNext, Observable.Transformer<T, R> transformer)
+    {
+        return subscribe(onNext, null, null, transformer);
+    }
 
-        if (mSubscriber == null && mSubscriptionObserver == null)
-        {
-            Action1<? super O> actionNext = mActionNext;
-            if (mQueueEvents && mQueueSubscriptionSafetyCheckEnabled)
-                actionNext = RXBusUtil.wrapQueueAction(mActionNext, mQueuer);
+    public Subscription subscribe(Action1<T> onNext, Action1<Throwable> onError)
+    {
+        return subscribe(onNext, onError, null, null);
+    }
 
-            if (mActionError != null && mActionOnComplete != null)
-                return observable.subscribe(actionNext, mActionError, mActionOnComplete);
-            else if (mActionError != null)
-                return observable.subscribe(actionNext, mActionError);
-            return observable.subscribe(actionNext);
-        }
-        else if (mSubscriber == null)
-        {
-            Observer<? super O> subscriptionObserver = mSubscriptionObserver;
-            if (mQueueEvents && mQueueSubscriptionSafetyCheckEnabled)
-                subscriptionObserver = RXBusUtil.wrapObserver(mSubscriptionObserver, mQueuer);
-            return observable.subscribe(subscriptionObserver);
-        }
-        else if (mSubscriptionObserver == null)
-        {
-            Subscriber<? super O> subscriber = mSubscriber;
-            if (mQueueEvents && mQueueSubscriptionSafetyCheckEnabled)
-                subscriber = RXBusUtil.wrapSubscriber(mSubscriber, mQueuer);
-            return observable.subscribe(subscriber);
-        }
-        else
-            throw new RuntimeException("Subscription can't be build, because you have set more than one of following: nnext action, subscriber or observable!");
+    public <R> Subscription subscribe(Action1<R> onNext, Action1<Throwable> onError, Observable.Transformer<T, R> transformer)
+    {
+        return subscribe(onNext, onError, null, transformer);
+    }
+
+    public Subscription subscribe(Action1<T> onNext, Action1<Throwable> onError,  Action0 onCompleted)
+    {
+        return subscribe(onNext, onError, onCompleted, null);
+    }
+
+    // ---------------------------
+    // subscribe implementations
+    // ---------------------------
+
+    public <R> Subscription subscribe(Action1<R> onNext, Action1<Throwable> onError,  Action0 onCompleted, Observable.Transformer<T, R> transformer)
+    {
+        Observable observable = build(false);
+        if (transformer != null)
+            observable = observable.compose(transformer);
+
+        if (onNext == null)
+            onNext = Actions.empty();
+        if (onError == null)
+            onError = InternalObservableUtils.ERROR_NOT_IMPLEMENTED;
+        if (onCompleted == null)
+            onCompleted = Actions.empty();
+
+        Action1<R> actualOnNext = onNext;
+        if (mQueuer != null && mQueueSubscriptionSafetyCheckEnabled)
+            actualOnNext = RXBusUtil.wrapQueueAction(onNext, mQueuer);
+
+        Subscription subscription = observable.subscribe(actualOnNext, onError, onCompleted);
+        if (mBoundObject != null)
+            RXSubscriptionManager.addSubscription(mBoundObject, subscription);
+        return subscription;
+    }
+
+    public <R> Subscription subscribe(Observer<R> observer, Observable.Transformer<T, R> transformer)
+    {
+        Observable observable = build(false);
+        if (transformer != null)
+            observable = observable.compose(transformer);
+
+        Observer<R> actualObserver = observer;
+        if (mQueuer != null && mQueueSubscriptionSafetyCheckEnabled)
+            actualObserver = RXBusUtil.wrapObserver(observer, mQueuer);
+
+        Subscription subscription = observable.subscribe(actualObserver);
+        if (mBoundObject != null)
+            RXSubscriptionManager.addSubscription(mBoundObject, subscription);
+        return subscription;
+    }
+
+    public <R> Subscription subscribe(Subscriber<R> subscriber, Observable.Transformer<T, R> transformer)
+    {
+        Observable observable = build(false);
+        if (transformer != null)
+            observable = observable.compose(transformer);
+
+        Observer<R> actualSubscriber = subscriber;
+        if (mQueuer != null && mQueueSubscriptionSafetyCheckEnabled)
+            actualSubscriber = RXBusUtil.wrapSubscriber(subscriber, mQueuer);
+
+        Subscription subscription = observable.subscribe(actualSubscriber);
+        if (mBoundObject != null)
+            RXSubscriptionManager.addSubscription(mBoundObject, subscription);
+        return subscription;
     }
 
     private <X> Observable<X> applySchedular(Observable<X> observable)

@@ -24,54 +24,23 @@ public class PauseAwareActivity extends AppCompatActivity implements IRXBusQueue
     public PauseAwareActivity()
     {
         super();
-
-        // sample subscription in base class
-        RXSubscriptionManager.addSubscription(
-                this,
-                RXBusBuilder.create(String.class)
-                        .withBusMode(RXBusMode.Main)
-                        .withKey("TEST_ISSUE_6_A")
-                        .queue(this)
-                        .withOnNext(new Action1<String>()
-                        {
-                            @Override
-                            public void call(String s)
-                            {
-                                Log.d(TAG, "Reveived (key \"TEST_ISSUE_6_A\"): " + s + " | isResumed=" + isBusResumed());
-                            }
-                        })
-                        .buildSubscription());
-
-        RXSubscriptionManager.addSubscription(
-                this,
-                RXBusBuilder.create(String.class)
-                        .withBusMode(RXBusMode.Main)
-                        .withKey("TEST_ISSUE_6_B")
-                        .queue(this)
-                        .withOnNext(new Action1<String>()
-                        {
-                            @Override
-                            public void call(String s)
-                            {
-                                Log.d(TAG, "Reveived (key \"TEST_ISSUE_6_B\"): " + s + " | isResumed=" + isBusResumed());
-                            }
-                        })
-                        .buildSubscription());
     }
 
     @Override
     protected void onResume()
     {
         super.onResume();
+        Log.d(TAG, "BASE BEFORE BUS onResume");
         mResumedObject.onNext(true);
-        Log.d(TAG, "onResume");
+        Log.d(TAG, "BASE AFTER BUS onResume");
     }
 
     @Override
     protected void onPause()
     {
+        Log.d(TAG, "BASE BEFORE BUS onPause");
         mResumedObject.onNext(false);
-        Log.d(TAG, "onPause");
+        Log.d(TAG, "BASE AFTER BUS onPause");
         super.onPause();
     }
 
