@@ -78,7 +78,7 @@ You can use this library to subscribe to events and only get them when your acti
 ```java
 RXBusBuilder.create(TestEvent.class)
     // this enables the queuing mode! Passed object must implement IRXBusQueue interface, see the demo app for an example
-    .queue(rxBusQueue)
+    .withQueuing(rxBusQueue)
     .withOnNext(new Action1<TestEvent>() {
         @Override
         public void call(TestEvent s) {
