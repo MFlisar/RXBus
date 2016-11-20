@@ -19,13 +19,13 @@ repositories {
 2. add the compile statement to your module's `build.gradle`:
 ```groovy
 dependencies {
-    compile 'com.github.MFlisar:RXBus:0.8'
+    compile 'com.github.MFlisar:RXBus:0.9'
 }
 ```
 
 ### Migration
 
-If you update from version <0.5, follow this short migration guide: [MIGRATION GUIDE](https://github.com/MFlisar/RXBus/blob/master/MIGRATION.md)
+If you update from version <0.5 or version <0.9, follow this short migration guide: [MIGRATION GUIDE](https://github.com/MFlisar/RXBus/blob/master/MIGRATION.md)
 
 ### Usage
 
@@ -36,7 +36,7 @@ If you update from version <0.5, follow this short migration guide: [MIGRATION G
 - [Sending an event](#sending-an-event)
 - [Advanced usage - QUEUING](#advanced-usage---queuing)
 - [Advanced usage - KEYS](#advanced-usage---keys)
-- [Advanced usage - bus observable processor](#advanced-usage---bus-observable-processor)
+- [Advanced usage](#advanced-usage)
 - [Helper class - `RXSubscriptionManager`](#helper-class---rxsubscriptionmanager)
 
 #####Demo
@@ -117,38 +117,12 @@ Subscription queuedSubscription = RXBusBuilder.create(String.class)
     .buildSubscription();
 ```
 
-#####Advanced usage - bus observable processor (this does not look very nice and does not follow the rx base rule of never breaking the chain, so it's likely to be removed and replaced by something better!)
+#####Advanced usage
 
-Use this if you want to process the observed event before you emit it.
+TODO...
 
 ```java
-// for example, instead of observing a string, you observe the hash of the string
-IRXBusObservableProcessor observableProcessor = new IRXBusObservableProcessor<String, Integer>()
-{
-    @Override
-    public Observable<Integer> onObservableReady(Observable<String> observable)
-    {
-        // do anything with the observable and return on of the processed type in the end
-        return observable.map(new Func1<String, Integer>()
-        {
-            @Override
-            public Integer call(String s)
-            {
-                    return s.hashCode();
-            }
-        });
-    }
-};
-RXBusBuilder.create(String.class, Integer.class, observableProcessor)
-    .withOnNext(new Action1<Integer>()
-    {
-        @Override
-        public void call(Integer integer)
-        {
-            // here you get the hash instead of the string
-        }
-    })
-    .buildSubscription();
+...
 ```
 
 #####Helper class - `RXSubscriptionManager`
