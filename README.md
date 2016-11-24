@@ -155,9 +155,9 @@ Observable.Transformer<TestEvent, TestEventTransformed> transformer = new Observ
 RXBusBuilder.create(TestEvent.class)
     .withQueuing(rxBusQueue)
     .withBound(boundObject)
-    .subscribe(new Action1<Object>() {
+    .subscribe(new Action1<TestEventTransformed>() {
         @Override
-        public void call(String s) {
+        public void call(TestEventTransformed transformedEvent) {
         }
     }, transformer);
 ```
