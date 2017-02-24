@@ -1,5 +1,7 @@
 ###RXBus [![Release](https://jitpack.io/v/MFlisar/RXBus.svg)](https://jitpack.io/#MFlisar/RXBus) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-RXBus-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/3520)
 
+#####RxJava V2: If you are looking for a version for RxJava V2, check out my [RxBus2](https://github.com/MFlisar/RxBus2)
+
 ### What does it do?
 
 * it allows you to *post events* to a bus
