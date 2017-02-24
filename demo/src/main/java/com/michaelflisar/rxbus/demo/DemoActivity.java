@@ -21,7 +21,7 @@ import rx.functions.Func1;
  */
 public class DemoActivity extends PauseAwareActivity
 {
-    private static final String TAG = DemoActivity.class.getSimpleName();
+    private static final String TAG = "RXBus - " + DemoActivity.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState)

@@ -17,7 +17,7 @@ import rx.subjects.BehaviorSubject;
  */
 public class PauseAwareActivity extends AppCompatActivity implements IRXBusQueue
 {
-    private static final String TAG = PauseAwareActivity.class.getSimpleName();
+    private static final String TAG = "RXBus - " + PauseAwareActivity.class.getSimpleName();
 
     private final BehaviorSubject<Boolean> mResumedObject = BehaviorSubject.create(false);
 
